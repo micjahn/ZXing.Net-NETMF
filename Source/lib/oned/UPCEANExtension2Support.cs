@@ -15,7 +15,7 @@
  */
 
 using System;
-using System.Collections.Generic;
+using System.Collections;
 using System.Text;
 
 using ZXing.Common;
@@ -39,7 +39,7 @@ namespace ZXing.OneD
             return null;
 
          String resultString = result.ToString();
-         IDictionary<ResultMetadataType, Object> extensionData = parseExtensionString(resultString);
+         var extensionData = parseExtensionString(resultString);
 
          Result extensionResult =
              new Result(resultString,
@@ -107,14 +107,15 @@ namespace ZXing.OneD
       /// Parses the extension string.
       /// </summary>
       /// <param name="raw">raw content of extension</param>
-      /// <returns>formatted interpretation of raw content as a {@link Map} mapping
-      private static IDictionary<ResultMetadataType, Object> parseExtensionString(String raw)
+      /// <returns>formatted interpretation of raw content as a {@link Map} mapping</returns>
+      private static Hashtable parseExtensionString(String raw)
       {
          if (raw.Length != 2) 
          {
             return null;
          }
-         IDictionary<ResultMetadataType,Object> result = new Dictionary<ResultMetadataType,Object>();
+         // IDictionary<ResultMetadataType,Object> result = new Dictionary<ResultMetadataType,Object>();
+         var result = new Hashtable();
          result[ResultMetadataType.ISSUE_NUMBER] = Convert.ToInt32(raw);
          return result;
       }

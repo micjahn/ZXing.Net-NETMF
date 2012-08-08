@@ -25,7 +25,7 @@
  */
 
 using System;
-using System.Collections.Generic;
+using System.Collections;
 using ZXing.Common;
 using ZXing.OneD.RSS.Expanded.Decoders;
 
@@ -100,15 +100,15 @@ namespace ZXing.OneD.RSS.Expanded
 
       private const int MAX_PAIRS = 11;
 
-      private readonly List<ExpandedPair> pairs = new List<ExpandedPair>(MAX_PAIRS);
+      private readonly ArrayList pairs = new ArrayList();
       private readonly int[] startEnd = new int[2];
       private readonly int[] currentSequence = new int[LONGEST_SEQUENCE_SIZE];
 
-      internal List<ExpandedPair> Pairs { get { return pairs; } }
+      internal ArrayList Pairs { get { return pairs; } }
 
       override public Result decodeRow(int rowNumber,
                               BitArray row,
-                              IDictionary<DecodeHintType, object> hints)
+                              Hashtable hints)
       {
          reset();
          if (decodeRow2pairs(rowNumber, row) == false)
@@ -146,15 +146,15 @@ namespace ZXing.OneD.RSS.Expanded
          }
       }
 
-      private static Result constructResult(List<ExpandedPair> pairs)
+      private static Result constructResult(ArrayList pairs)
       {
          BitArray binary = BitArrayBuilder.buildBitArray(pairs);
 
          AbstractExpandedDecoder decoder = AbstractExpandedDecoder.createDecoder(binary);
          String resultingString = decoder.parseInformation();
 
-         ResultPoint[] firstPoints = pairs[0].FinderPattern.ResultPoints;
-         ResultPoint[] lastPoints = pairs[pairs.Count - 1].FinderPattern.ResultPoints;
+         ResultPoint[] firstPoints = ((ExpandedPair)pairs[0]).FinderPattern.ResultPoints;
+         ResultPoint[] lastPoints = ((ExpandedPair)pairs[pairs.Count - 1]).FinderPattern.ResultPoints;
 
          return new Result(
                resultingString,
@@ -166,7 +166,7 @@ namespace ZXing.OneD.RSS.Expanded
 
       private bool checkChecksum()
       {
-         ExpandedPair firstPair = pairs[0];
+         ExpandedPair firstPair = (ExpandedPair)pairs[0];
          DataCharacter checkCharacter = firstPair.LeftChar;
          DataCharacter firstCharacter = firstPair.RightChar;
 
@@ -175,7 +175,7 @@ namespace ZXing.OneD.RSS.Expanded
 
          for (int i = 1; i < pairs.Count; ++i)
          {
-            ExpandedPair currentPair = pairs[i];
+            ExpandedPair currentPair = (ExpandedPair)pairs[i];
             checksum += currentPair.LeftChar.ChecksumPortion;
             s++;
             DataCharacter currentRightChar = currentPair.RightChar;
@@ -210,7 +210,7 @@ namespace ZXing.OneD.RSS.Expanded
       }
 
       // not private for testing
-      internal ExpandedPair retrieveNextPair(BitArray row, List<ExpandedPair> previousPairs, int rowNumber)
+      internal ExpandedPair retrieveNextPair(BitArray row, ArrayList previousPairs, int rowNumber)
       {
          bool isOddPattern = previousPairs.Count % 2 == 0;
 
@@ -247,7 +247,7 @@ namespace ZXing.OneD.RSS.Expanded
          return new ExpandedPair(leftChar, rightChar, pattern, mayBeLast);
       }
 
-      private bool checkPairSequence(List<ExpandedPair> previousPairs, FinderPattern pattern, out bool mayBeLast)
+      private bool checkPairSequence(ArrayList previousPairs, FinderPattern pattern, out bool mayBeLast)
       {
          mayBeLast = false;
          int currentSequenceLength = previousPairs.Count + 1;
@@ -258,7 +258,7 @@ namespace ZXing.OneD.RSS.Expanded
 
          for (int pos = 0; pos < previousPairs.Count; ++pos)
          {
-            currentSequence[pos] = previousPairs[pos].FinderPattern.Value;
+            currentSequence[pos] = ((ExpandedPair)previousPairs[pos]).FinderPattern.Value;
          }
 
          currentSequence[currentSequenceLength - 1] = pattern.Value;
@@ -288,7 +288,7 @@ namespace ZXing.OneD.RSS.Expanded
          return false;
       }
 
-      private bool findNextPair(BitArray row, List<ExpandedPair> previousPairs, int forcedOffset)
+      private bool findNextPair(BitArray row, ArrayList previousPairs, int forcedOffset)
       {
          int[] counters = getDecodeFinderCounters();
          counters[0] = 0;
@@ -309,7 +309,7 @@ namespace ZXing.OneD.RSS.Expanded
          }
          else
          {
-            ExpandedPair lastPair = previousPairs[previousPairs.Count - 1];
+            ExpandedPair lastPair = (ExpandedPair)previousPairs[previousPairs.Count - 1];
             rowOffset = lastPair.FinderPattern.StartEnd[1];
          }
          bool searchingEvenPair = previousPairs.Count % 2 != 0;

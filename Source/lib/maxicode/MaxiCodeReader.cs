@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-using System.Collections.Generic;
 
+using System.Collections;
 using ZXing.Common;
 using ZXing.Maxicode.Internal;
 
@@ -45,10 +45,10 @@ namespace ZXing.Maxicode
          return decode(image, null);
       }
 
-      public Result decode(BinaryBitmap image, IDictionary<DecodeHintType, object> hints)
+      public Result decode(BinaryBitmap image, Hashtable hints)
       {
          DecoderResult decoderResult;
-         if (hints != null && hints.ContainsKey(DecodeHintType.PURE_BARCODE))
+         if (hints != null && hints.Contains(DecodeHintType.PURE_BARCODE))
          {
             BitMatrix bits = extractPureBits(image.BlackMatrix);
             if (bits == null)

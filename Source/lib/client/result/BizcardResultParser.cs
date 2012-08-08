@@ -15,7 +15,8 @@
 */
 
 using System;
-using System.Collections.Generic;
+using System.Collections;
+
 
 namespace ZXing.Client.Result
 {
@@ -37,7 +38,8 @@ namespace ZXing.Client.Result
       override public ParsedResult parse(ZXing.Result result)
       {
          String rawText = result.Text;
-         if (rawText == null || !rawText.StartsWith("BIZCARD:"))
+         if (rawText == null || rawText.Length < 8 ||
+             String.Compare(rawText.Substring(0, 8).ToUpper(), "BIZCARD:") != 0)
          {
             return null;
          }
@@ -70,7 +72,7 @@ namespace ZXing.Client.Result
 
       private static String[] buildPhoneNumbers(String number1, String number2, String number3)
       {
-         var numbers = new List<string>();
+         var numbers = new ArrayList();
          if (number1 != null)
          {
             numbers.Add(number1);

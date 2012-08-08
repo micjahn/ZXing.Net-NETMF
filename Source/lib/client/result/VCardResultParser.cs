@@ -15,7 +15,7 @@
 */
 
 using System;
-using System.Collections.Generic;
+using System.Collections;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -63,26 +63,26 @@ namespace ZXing.Client.Result
          {
             return null;
          }
-         List<List<String>> names = matchVCardPrefixedField("FN", rawText, true, false);
+         var names = matchVCardPrefixedField("FN", rawText, true, false);
          if (names == null)
          {
             // If no display names found, look for regular name fields and format them
             names = matchVCardPrefixedField("N", rawText, true, false);
             formatNames(names);
          }
-         List<List<String>> phoneNumbers = matchVCardPrefixedField("TEL", rawText, true, false);
-         List<List<String>> emails = matchVCardPrefixedField("EMAIL", rawText, true, false);
-         List<String> note = matchSingleVCardPrefixedField("NOTE", rawText, false, false);
-         List<List<String>> addresses = matchVCardPrefixedField("ADR", rawText, true, true);
-         List<String> org = matchSingleVCardPrefixedField("ORG", rawText, true, true);
-         List<String> birthday = matchSingleVCardPrefixedField("BDAY", rawText, true, false);
-         if (birthday != null && !isLikeVCardDate(birthday[0]))
+         var phoneNumbers = matchVCardPrefixedField("TEL", rawText, true, false);
+         var emails = matchVCardPrefixedField("EMAIL", rawText, true, false);
+         var note = matchSingleVCardPrefixedField("NOTE", rawText, false, false);
+         var addresses = matchVCardPrefixedField("ADR", rawText, true, true);
+         var org = matchSingleVCardPrefixedField("ORG", rawText, true, true);
+         var birthday = matchSingleVCardPrefixedField("BDAY", rawText, true, false);
+         if (birthday != null && !isLikeVCardDate((String)birthday[0]))
          {
             birthday = null;
          }
-         List<String> title = matchSingleVCardPrefixedField("TITLE", rawText, true, false);
-         List<String> url = matchSingleVCardPrefixedField("URL", rawText, true, false);
-         List<String> instantMessenger = matchSingleVCardPrefixedField("IMPP", rawText, true, false);
+         var title = matchSingleVCardPrefixedField("TITLE", rawText, true, false);
+         var url = matchSingleVCardPrefixedField("URL", rawText, true, false);
+         var instantMessenger = matchSingleVCardPrefixedField("IMPP", rawText, true, false);
          return new AddressBookParsedResult(toPrimaryValues(names),
                                             null,
                                             toPrimaryValues(phoneNumbers),
@@ -99,12 +99,12 @@ namespace ZXing.Client.Result
                                             toPrimaryValue(url));
       }
 
-      public static List<List<String>> matchVCardPrefixedField(String prefix,
+      public static ArrayList matchVCardPrefixedField(String prefix,
                                                         String rawText,
                                                         bool trim,
                                                         bool parseFieldDivider)
       {
-         List<List<String>> matches = null;
+         ArrayList matches = null;
          int i = 0;
          int max = rawText.Length;
 
@@ -126,7 +126,7 @@ namespace ZXing.Client.Result
             i = match.Index + match.Length;
 
             String metadataString = match.Groups[1].Value; // group 1 = metadata substring
-            List<String> metadata = null;
+            ArrayList metadata = null;
             bool quotedPrintable = false;
             String quotedPrintableCharset = null;
             if (metadataString != null)
@@ -135,7 +135,7 @@ namespace ZXing.Client.Result
                {
                   if (metadata == null)
                   {
-                     metadata = new List<String>(1);
+                     metadata = new ArrayList();
                   }
                   metadata.Add(metadatum);
                   String[] metadatumTokens = EQUALS.Split(metadatum, 2);
@@ -143,12 +143,12 @@ namespace ZXing.Client.Result
                   {
                      String key = metadatumTokens[0];
                      String value = metadatumTokens[1];
-                     if (String.Compare("ENCODING", key, StringComparison.OrdinalIgnoreCase) == 0 &&
-                        String.Compare("QUOTED-PRINTABLE", value, StringComparison.OrdinalIgnoreCase) == 0)
+                     if (String.Compare("ENCODING", key.ToUpper()) == 0 &&
+                        String.Compare("QUOTED-PRINTABLE", value.ToUpper()) == 0)
                      {
                         quotedPrintable = true;
                      }
-                     else if (String.Compare("CHARSET", key, StringComparison.OrdinalIgnoreCase) == 0)
+                     else if (String.Compare("CHARSET", key.ToUpper()) == 0)
                      {
                         quotedPrintableCharset = value;
                      }
@@ -188,7 +188,7 @@ namespace ZXing.Client.Result
                // found a match
                if (matches == null)
                {
-                  matches = new List<List<String>>(1); // lazy init
+                  matches = new ArrayList(); // lazy init
                }
                if (i >= 1 && rawText[i - 1] == '\r')
                {
@@ -219,7 +219,7 @@ namespace ZXing.Client.Result
                }
                if (metadata == null)
                {
-                  var matched = new List<String>(1);
+                  var matched = new ArrayList();
                   matched.Add(element);
                   matches.Add(matched);
                }
@@ -294,8 +294,8 @@ namespace ZXing.Client.Result
             String fragment;
             if (charset == null)
             {
-#if (WINDOWS_PHONE70 || WINDOWS_PHONE71 || SILVERLIGHT4 || SILVERLIGHT5)
-               fragment = Encoding.UTF8.GetString(fragmentBytes, 0, fragmentBytes.Length);
+#if (WINDOWS_PHONE70 || WINDOWS_PHONE71 || SILVERLIGHT4 || SILVERLIGHT5 || MF_FRAMEWORK)
+               fragment = Encoding.UTF8.GetChars(fragmentBytes, 0, fragmentBytes.Length).ToString();
 #else
                fragment = Encoding.Default.GetString(fragmentBytes);
 #endif
@@ -304,13 +304,13 @@ namespace ZXing.Client.Result
             {
                try
                {
-                  fragment = Encoding.GetEncoding(charset).GetString(fragmentBytes, 0, fragmentBytes.Length);
+                  fragment = Encoding.UTF8.GetChars(fragmentBytes, 0, fragmentBytes.Length).ToString();
                }
                catch (Exception )
                {
                   // Yikes, well try anyway:
-#if (WINDOWS_PHONE70 || WINDOWS_PHONE71 || SILVERLIGHT4 || SILVERLIGHT5)
-                  fragment = Encoding.UTF8.GetString(fragmentBytes, 0, fragmentBytes.Length);
+#if (WINDOWS_PHONE70 || WINDOWS_PHONE71 || SILVERLIGHT4 || SILVERLIGHT5 || MF_FRAMEWORK)
+                  fragment = Encoding.UTF8.GetChars(fragmentBytes, 0, fragmentBytes.Length).ToString();
 #else
                   fragment = Encoding.Default.GetString(fragmentBytes);
 #endif
@@ -322,47 +322,47 @@ namespace ZXing.Client.Result
          }
       }
 
-      internal static List<String> matchSingleVCardPrefixedField(String prefix,
+      internal static ArrayList matchSingleVCardPrefixedField(String prefix,
                                                     String rawText,
                                                     bool trim,
                                                     bool parseFieldDivider)
       {
-         List<List<String>> values = matchVCardPrefixedField(prefix, rawText, trim, parseFieldDivider);
-         return values == null || values.Count == 0 ? null : values[0];
+         ArrayList values = matchVCardPrefixedField(prefix, rawText, trim, parseFieldDivider);
+         return values == null || values.Count == 0 ? null : (ArrayList)values[0];
       }
 
-      private static String toPrimaryValue(List<String> list)
+      private static String toPrimaryValue(ArrayList list)
       {
-         return list == null || list.Count == 0 ? null : list[0];
+         return list == null || list.Count == 0 ? null : (String)list[0];
       }
 
-      private static String[] toPrimaryValues(ICollection<List<String>> lists)
+      private static String[] toPrimaryValues(ArrayList lists)
       {
          if (lists == null || lists.Count == 0)
          {
             return null;
          }
-         List<String> result = new List<String>(lists.Count);
-         foreach (var list in lists)
+         var result = new ArrayList();
+         foreach (ArrayList list in lists)
          {
             result.Add(list[0]);
          }
          return SupportClass.toStringArray(result);
       }
 
-      private static String[] toTypes(ICollection<List<String>> lists)
+      private static String[] toTypes(ArrayList lists)
       {
          if (lists == null || lists.Count == 0)
          {
             return null;
          }
-         List<String> result = new List<String>(lists.Count);
-         foreach (var list in lists)
+         var result = new ArrayList();
+         foreach (ArrayList list in lists)
          {
             String type = null;
             for (int i = 1; i < list.Count; i++)
             {
-               String metadatum = list[i];
+               String metadatum = (String)list[i];
                int equals = metadatum.IndexOf('=');
                if (equals < 0)
                {
@@ -370,7 +370,7 @@ namespace ZXing.Client.Result
                   type = metadatum;
                   break;
                }
-               if (String.Compare("TYPE", metadatum.Substring(0, equals), StringComparison.OrdinalIgnoreCase) == 0)
+               if (String.Compare("TYPE", metadatum.Substring(0, equals).ToUpper()) == 0)
                {
                   type = metadatum.Substring(equals + 1);
                   break;
@@ -392,13 +392,13 @@ namespace ZXing.Client.Result
        *
        * @param names name values to format, in place
        */
-      private static void formatNames(IEnumerable<List<String>> names)
+      private static void formatNames(IEnumerable names)
       {
          if (names != null)
          {
-            foreach (var list in names)
+            foreach (ArrayList list in names)
             {
-               String name = list[0];
+               String name = (String)list[0];
                String[] components = new String[5];
                int start = 0;
                int end;

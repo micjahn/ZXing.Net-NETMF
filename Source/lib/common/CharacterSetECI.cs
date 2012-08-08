@@ -15,7 +15,8 @@
 */
 
 using System;
-using System.Collections.Generic;
+using System.Collections;
+
 
 namespace ZXing.Common
 {
@@ -39,13 +40,13 @@ namespace ZXing.Common
 
       }
 
-      private static IDictionary<int, CharacterSetECI> VALUE_TO_ECI;
-      private static IDictionary<string, CharacterSetECI> NAME_TO_ECI;
+      private static IDictionary VALUE_TO_ECI;
+      private static IDictionary NAME_TO_ECI;
 
       static CharacterSetECI()
       {
-         VALUE_TO_ECI = new Dictionary<int, CharacterSetECI>();
-         NAME_TO_ECI = new Dictionary<string, CharacterSetECI>();
+         VALUE_TO_ECI = new Hashtable();
+         NAME_TO_ECI = new Hashtable();
          // TODO figure out if these values are even right!
          addCharacterSet(0, "CP437");
          addCharacterSet(1, new[] { "ISO8859_1", "ISO-8859-1" });
@@ -116,7 +117,7 @@ namespace ZXing.Common
          {
             return null;
          }
-         return VALUE_TO_ECI[value];
+         return (CharacterSetECI)VALUE_TO_ECI[value];
       }
 
       /// <param name="name">character set ECI encoding name
@@ -126,7 +127,7 @@ namespace ZXing.Common
       /// </returns>
       public static CharacterSetECI getCharacterSetECIByName(String name)
       {
-         return NAME_TO_ECI[name];
+         return (CharacterSetECI)NAME_TO_ECI[name];
       }
    }
 }

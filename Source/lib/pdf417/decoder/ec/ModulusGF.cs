@@ -107,7 +107,7 @@ namespace ZXing.PDF417.Internal.EC
       {
          if (a == 0)
          {
-            throw new ArithmeticException();
+            throw new InvalidOperationException();
          }
          return expTable[modulus - logTable[a] - 1];
       }

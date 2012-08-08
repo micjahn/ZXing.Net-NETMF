@@ -141,7 +141,7 @@ namespace ZXing.OneD
          {
             if (lgPatternFound == FIRST_DIGIT_ENCODINGS[d])
             {
-               resultString.Insert(0, new[] { (char)('0' + d) });
+               resultString.Insert(0, new[] { (char)('0' + d) }, 0, 1);
                return true;
             }
          }

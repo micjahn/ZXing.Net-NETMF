@@ -30,8 +30,8 @@ namespace ZXing
    {
       private readonly float x;
       private readonly float y;
-      private readonly byte[] bytesX;
-      private readonly byte[] bytesY;
+      //private readonly byte[] bytesX;
+      //private readonly byte[] bytesY;
       private String toString;
 
       /// <summary>
@@ -51,8 +51,8 @@ namespace ZXing
          this.x = x;
          this.y = y;
          // calculate only once for GetHashCode
-         bytesX = BitConverter.GetBytes(x);
-         bytesY = BitConverter.GetBytes(y);
+         //bytesX = BitConverter.GetBytes(x);
+         //bytesY = BitConverter.GetBytes(y);
       }
 
       /// <summary>
@@ -100,8 +100,7 @@ namespace ZXing
       /// </returns>
       public override int GetHashCode()
       {
-         return 31 * ((bytesX[0] << 24) + (bytesX[1] << 16) + (bytesX[2] << 8) + bytesX[3]) +
-                      (bytesY[0] << 24) + (bytesY[1] << 16) + (bytesY[2] << 8) + bytesY[3];
+         return 31 * x.GetHashCode() + y.GetHashCode();
       }
 
       /// <summary>
@@ -115,7 +114,7 @@ namespace ZXing
          if (toString == null)
          {
             var result = new System.Text.StringBuilder(25);
-            result.AppendFormat("({0}, {1})", x, y);
+            result.Append("(" + x + ", " + y + ")");
             toString = result.ToString();
          }
          return toString;

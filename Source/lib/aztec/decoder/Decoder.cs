@@ -15,7 +15,7 @@
  */
 
 using System;
-using System.Collections.Generic;
+using System.Collections;
 using System.Text;
 
 using ZXing.Common;
@@ -83,7 +83,7 @@ namespace ZXing.Aztec.Internal
                                                         "CTRL_PS", " ", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" , ",", ".", "CTRL_UL", "CTRL_US"
                                                      };
 
-      private static readonly IDictionary<Table, String[]> codeTables = new Dictionary<Table, String[]>
+      private static readonly IDictionary codeTables = new Hashtable
                                                                  {
                                                                     {Table.UPPER, UPPER_TABLE},
                                                                     {Table.LOWER, LOWER_TABLE},
@@ -92,7 +92,7 @@ namespace ZXing.Aztec.Internal
                                                                     {Table.DIGIT, DIGIT_TABLE},
                                                                     {Table.BINARY, null}
                                                                  };
-      private static readonly IDictionary<char, Table> codeTableMap = new Dictionary<char, Table>
+      private static readonly IDictionary codeTableMap = new Hashtable
                                                                  {
                                                                     {'U', Table.UPPER},
                                                                     {'L', Table.LOWER},
@@ -241,11 +241,11 @@ namespace ZXing.Aztec.Internal
                   startIndex += size;
 
                   String str = getCharacter(strTable, code);
-                  if (str.StartsWith("CTRL_"))
+                  if (String.Compare(str.Substring(0, 5), "CTRL_") == 0)
                   {
                      // Table changes
                      table = getTable(str[5]);
-                     strTable = codeTables[table];
+                     strTable = (string[])codeTables[table];
 
                      if (str[6] == 'S')
                      {
@@ -266,7 +266,7 @@ namespace ZXing.Aztec.Internal
             if (switchShift)
             {
                table = lastTable;
-               strTable = codeTables[table];
+               strTable = (string[])codeTables[table];
                shift = false;
                switchShift = false;
             }
@@ -282,9 +282,9 @@ namespace ZXing.Aztec.Internal
       /// <returns></returns>
       private static Table getTable(char t)
       {
-         if (!codeTableMap.ContainsKey(t))
-            return codeTableMap['U'];
-         return codeTableMap[t];
+         if (!codeTableMap.Contains(t))
+            return (Table)codeTableMap['U'];
+         return (Table)codeTableMap[t];
       }
 
       /// <summary>

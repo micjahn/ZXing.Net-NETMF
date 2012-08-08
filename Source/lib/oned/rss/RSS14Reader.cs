@@ -15,7 +15,7 @@
  */
 
 using System;
-using System.Collections.Generic;
+using System.Collections;
 using System.Text;
 using ZXing.Common;
 
@@ -45,18 +45,18 @@ namespace ZXing.OneD.RSS
                                                            new[] {1, 3, 9, 1},
                                                         };
 
-      private readonly List<Pair> possibleLeftPairs;
-      private readonly List<Pair> possibleRightPairs;
+      private readonly ArrayList possibleLeftPairs;
+      private readonly ArrayList possibleRightPairs;
 
       public RSS14Reader()
       {
-         possibleLeftPairs = new List<Pair>();
-         possibleRightPairs = new List<Pair>();
+         possibleLeftPairs = new ArrayList();
+         possibleRightPairs = new ArrayList();
       }
 
       override public Result decodeRow(int rowNumber,
                               BitArray row,
-                              IDictionary<DecodeHintType, object> hints)
+                              Hashtable hints)
       {
          Pair leftPair = decodePair(row, false, rowNumber, hints);
          addOrTally(possibleLeftPairs, leftPair);
@@ -83,7 +83,7 @@ namespace ZXing.OneD.RSS
          return null;
       }
 
-      private static void addOrTally(IList<Pair> possiblePairs, Pair pair)
+      private static void addOrTally(ArrayList possiblePairs, Pair pair)
       {
          if (pair == null)
          {
@@ -167,7 +167,7 @@ namespace ZXing.OneD.RSS
          return checkValue == targetCheckValue;
       }
 
-      private Pair decodePair(BitArray row, bool right, int rowNumber, IDictionary<DecodeHintType, object> hints)
+      private Pair decodePair(BitArray row, bool right, int rowNumber, Hashtable hints)
       {
          int[] startEnd = findFinderPattern(row, 0, right);
          if (startEnd == null)
@@ -176,7 +176,7 @@ namespace ZXing.OneD.RSS
          if (pattern == null)
             return null;
 
-         ResultPointCallback resultPointCallback = hints == null || !hints.ContainsKey(DecodeHintType.NEED_RESULT_POINT_CALLBACK) ? null :
+         ResultPointCallback resultPointCallback = hints == null || !hints.Contains(DecodeHintType.NEED_RESULT_POINT_CALLBACK) ? null :
             (ResultPointCallback)hints[DecodeHintType.NEED_RESULT_POINT_CALLBACK];
 
          if (resultPointCallback != null)

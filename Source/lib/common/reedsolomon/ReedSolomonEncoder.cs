@@ -15,7 +15,8 @@
 */
 
 using System;
-using System.Collections.Generic;
+using System.Collections;
+
 
 namespace ZXing.Common.ReedSolomon
 {
@@ -31,7 +32,7 @@ namespace ZXing.Common.ReedSolomon
    public sealed class ReedSolomonEncoder
    {
       private readonly GenericGF field;
-      private readonly IList<GenericGFPoly> cachedGenerators;
+      private readonly IList cachedGenerators;
 
       public ReedSolomonEncoder(GenericGF field)
       {
@@ -40,7 +41,7 @@ namespace ZXing.Common.ReedSolomon
             throw new System.ArgumentException("Only QR Code is supported at this time");
          }
          this.field = field;
-         this.cachedGenerators = new List<GenericGFPoly>();
+         this.cachedGenerators = new ArrayList();
          cachedGenerators.Add(new GenericGFPoly(field, new int[] { 1 }));
       }
 
@@ -48,7 +49,7 @@ namespace ZXing.Common.ReedSolomon
       {
          if (degree >= cachedGenerators.Count)
          {
-            var lastGenerator = cachedGenerators[cachedGenerators.Count - 1];
+            var lastGenerator = (GenericGFPoly)cachedGenerators[cachedGenerators.Count - 1];
             for (int d = cachedGenerators.Count; d <= degree; d++)
             {
                var nextGenerator = lastGenerator.multiply(new GenericGFPoly(field, new int[] { 1, field.exp(d - 1) }));
@@ -56,7 +57,7 @@ namespace ZXing.Common.ReedSolomon
                lastGenerator = nextGenerator;
             }
          }
-         return cachedGenerators[degree];
+         return (GenericGFPoly)cachedGenerators[degree];
       }
 
       public void encode(int[] toEncode, int ecBytes)

@@ -1,8 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
+
 #if !SILVERLIGHT
 #if !UNITY
-using System.Drawing;
+using System.Collections;
+using Microsoft.SPOT;
+
 #endif
 #else
 using System.Windows.Media.Imaging;
@@ -10,6 +12,9 @@ using System.Windows.Media.Imaging;
 
 namespace ZXing
 {
+   public delegate void ResultPointHandler(ResultPoint resultPoint);
+   public delegate void ResultHandler(Result result);
+
    /// <summary>
    /// Interface for a smart class to decode the barcode inside a bitmap object
    /// </summary>
@@ -18,12 +23,12 @@ namespace ZXing
       /// <summary>
       /// event is executed when a result point was found
       /// </summary>
-      event Action<ResultPoint> ResultPointFound;
+      event ResultPointHandler ResultPointFound;
 
       /// <summary>
       /// event is executed when a result was found via decode
       /// </summary>
-      event Action<Result> ResultFound;
+      event ResultHandler ResultFound;
 
       /// <summary>
       /// Gets or sets a flag which cause a deeper look into the bitmap
@@ -57,7 +62,7 @@ namespace ZXing
       /// <value>
       /// The possible formats.
       /// </value>
-      IList<BarcodeFormat> PossibleFormats { get; set; }
+      IList PossibleFormats { get; set; }
 
 #if !SILVERLIGHT
 #if !UNITY

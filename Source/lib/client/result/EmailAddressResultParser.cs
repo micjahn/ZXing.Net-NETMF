@@ -36,7 +36,7 @@ namespace ZXing.Client.Result
             return null;
          }
          String emailAddress;
-         if (rawText.ToLower().StartsWith("mailto:"))
+         if (String.Compare(rawText.Substring(0, 7).ToLower(), "mailto:") == 0)
          {
             // If it starts with mailto:, assume it is definitely trying to be an email address
             emailAddress = rawText.Substring(7);
@@ -52,10 +52,10 @@ namespace ZXing.Client.Result
             {
                if (emailAddress.Length == 0)
                {
-                  emailAddress = nameValues["to"];
+                  emailAddress = (string)nameValues["to"];
                }
-               subject = nameValues["subject"];
-               body = nameValues["body"];
+               subject = (string)nameValues["subject"];
+               body = (string)nameValues["body"];
             }
             return new EmailAddressParsedResult(emailAddress, subject, body, rawText);
          }

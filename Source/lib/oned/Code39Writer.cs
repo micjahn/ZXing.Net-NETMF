@@ -15,7 +15,7 @@
  */
 
 using System;
-using System.Collections.Generic;
+using System.Collections;
 using ZXing.Common;
 
 namespace ZXing.OneD
@@ -31,7 +31,7 @@ namespace ZXing.OneD
                               BarcodeFormat format,
                               int width,
                               int height,
-                              IDictionary<EncodeHintType, object> hints)
+                              IDictionary hints)
       {
          if (format != BarcodeFormat.CODE_39)
          {

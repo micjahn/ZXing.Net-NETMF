@@ -181,7 +181,7 @@ namespace ZXing.Common.ReedSolomon
 
          if (a == 0)
          {
-            throw new ArithmeticException();
+            throw new InvalidOperationException();
          }
          return expTable[size - logTable[a] - 1];
       }

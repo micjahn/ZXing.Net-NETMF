@@ -15,7 +15,7 @@
 */
 
 using System;
-using System.Collections.Generic;
+using System.Collections;
 
 namespace ZXing.Common
 {
@@ -30,11 +30,11 @@ namespace ZXing.Common
 
       public String Text { get; private set; }
 
-      public IList<byte[]> ByteSegments { get; private set; }
+      public ArrayList ByteSegments { get; private set; }
 
       public String ECLevel { get; private set; }
 
-      public DecoderResult(byte[] rawBytes, String text, IList<byte[]> byteSegments, String ecLevel)
+      public DecoderResult(byte[] rawBytes, String text, ArrayList byteSegments, String ecLevel)
       {
          if (rawBytes == null && text == null)
          {

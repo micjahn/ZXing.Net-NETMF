@@ -14,8 +14,8 @@
 * limitations under the License.
 */
 
-using System.Collections.Generic;
 
+using System.Collections;
 using ZXing.Aztec;
 using ZXing.Datamatrix;
 using ZXing.Maxicode;
@@ -35,8 +35,8 @@ namespace ZXing
    /// <author>www.Redivivus.in (suraj.supekar@redivivus.in) - Ported from ZXING Java Source</author>
    public sealed class MultiFormatReader : Reader
    {
-      private IDictionary<DecodeHintType, object> hints;
-      private IList<Reader> readers;
+      private Hashtable hints;
+      private IList readers;
 
       /// <summary> This version of decode honors the intent of Reader.decode(BinaryBitmap) in that it
       /// passes null as a hint to the decoders. However, that makes it inefficient to call repeatedly.
@@ -64,7 +64,7 @@ namespace ZXing
       /// <returns> The contents of the image
       /// </returns>
       /// <throws>  ReaderException Any errors which occurred </throws>
-      public Result decode(BinaryBitmap image, IDictionary<DecodeHintType, object> hints)
+      public Result decode(BinaryBitmap image, Hashtable hints)
       {
          Hints = hints;
          return decodeInternal(image);
@@ -96,14 +96,14 @@ namespace ZXing
       /// </summary>
       /// <param name="hints">The set of hints to use for subsequent calls to decode(image)
       /// </param>
-      public IDictionary<DecodeHintType, object> Hints
+      public Hashtable Hints
       {
          set
          {
             hints = value;
 
-            var tryHarder = value != null && value.ContainsKey(DecodeHintType.TRY_HARDER);
-            var formats = value == null || !value.ContainsKey(DecodeHintType.POSSIBLE_FORMATS) ? null : (IList<BarcodeFormat>)value[DecodeHintType.POSSIBLE_FORMATS];
+            var tryHarder = value != null && value.Contains(DecodeHintType.TRY_HARDER);
+            var formats = value == null || !value.Contains(DecodeHintType.POSSIBLE_FORMATS) ? null : (IList)value[DecodeHintType.POSSIBLE_FORMATS];
 
             if (formats != null)
             {
@@ -120,7 +120,7 @@ namespace ZXing
                   formats.Contains(BarcodeFormat.RSS_14) ||
                   formats.Contains(BarcodeFormat.RSS_EXPANDED);
 
-               readers = new List<Reader>();
+               readers = new ArrayList();
                
                // Put 1D readers upfront in "normal" mode
                if (addOneDReader && !tryHarder)
@@ -157,7 +157,7 @@ namespace ZXing
             if (readers == null ||
                 readers.Count == 0)
             {
-               readers = readers ?? new List<Reader>();
+               readers = readers ?? new ArrayList();
 
                if (!tryHarder)
                {
@@ -183,7 +183,7 @@ namespace ZXing
          {
             foreach (var reader in readers)
             {
-               reader.reset();
+               ((Reader)(reader)).reset();
             }
          }
       }
@@ -192,13 +192,13 @@ namespace ZXing
       {
          if (readers != null)
          {
-            var rpCallback = hints != null && hints.ContainsKey(DecodeHintType.NEED_RESULT_POINT_CALLBACK)
+            var rpCallback = hints != null && hints.Contains(DecodeHintType.NEED_RESULT_POINT_CALLBACK)
                                 ? (ResultPointCallback) hints[DecodeHintType.NEED_RESULT_POINT_CALLBACK]
                                 : null;
 
             for (var index = 0; index < readers.Count; index++)
             {
-               var reader = readers[index];
+               var reader = (Reader)readers[index];
                reader.reset();
                var result = reader.decode(image, hints);
                if (result != null)

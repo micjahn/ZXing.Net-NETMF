@@ -30,14 +30,15 @@ namespace ZXing.Client.Result
       override public ParsedResult parse(ZXing.Result result)
       {
          String rawText = result.Text;
-         if (!rawText.StartsWith("WIFI:"))
+         if (rawText.Length < 5 ||
+             String.Compare(rawText.Substring(0, 5).ToUpper(), "WIFI:") != 0)
          {
             return null;
          }
          // Don't remove leading or trailing whitespace
          bool trim = false;
          String ssid = matchSinglePrefixedField("S:", rawText, ';', trim);
-         if (string.IsNullOrEmpty(ssid))
+         if (ssid == null || ssid.Length == 0)
          {
             return null;
          }

@@ -10,7 +10,7 @@
 //
 
 using System;
-using System.Collections.Generic;
+using System.Collections;
 using System.Text;
 
 namespace ZXing
@@ -128,19 +128,19 @@ namespace ZXing
          }
       }
 
-      /*******************************/
-      /// <summary>
-      /// Sets the capacity for the specified List
-      /// </summary>
-      /// <param name="vector">The List which capacity will be set</param>
-      /// <param name="newCapacity">The new capacity value</param>
-      public static void SetCapacity<T>(System.Collections.Generic.IList<T> vector, int newCapacity) where T : new()
-      {
-         while (newCapacity > vector.Count)
-            vector.Add(new T());
-         while (newCapacity < vector.Count)
-            vector.RemoveAt(vector.Count - 1);
-      }
+      ///*******************************/
+      ///// <summary>
+      ///// Sets the capacity for the specified List
+      ///// </summary>
+      ///// <param name="vector">The List which capacity will be set</param>
+      ///// <param name="newCapacity">The new capacity value</param>
+      //public static void SetCapacity<T>(System.Collections.Generic.IList<T> vector, int newCapacity) where T : new()
+      //{
+      //   while (newCapacity > vector.Count)
+      //      vector.Add(new T());
+      //   while (newCapacity < vector.Count)
+      //      vector.RemoveAt(vector.Count - 1);
+      //}
 
 
       /*******************************/
@@ -161,29 +161,64 @@ namespace ZXing
          return sbyteArray;
       }
 
-      public static String[] toStringArray(ICollection<string> strings)
+      public static String[] toStringArray(IList strings)
       {
          var result = new String[strings.Count];
          strings.CopyTo(result, 0);
          return result;
       }
 
-      public static string Join<T>(string separator, IEnumerable<T> values)
+      public static bool StartsWith(this string val, string start)
       {
-         var builder = new StringBuilder();
-         separator = separator ?? String.Empty;
-         if (values != null)
-         {
-            foreach (var value in values)
-            {
-               builder.Append(value);
-               builder.Append(separator);
-            }
-            if (builder.Length > 0)
-               builder.Length -= separator.Length;
-         }
-
-         return builder.ToString();
+         if (val.Length < start.Length)
+            return false;
+         var firstPart = val.Substring(0, start.Length);
+         return String.Compare(firstPart, start) == 0;
       }
+
+      public static void Sort(this IList list, IComparer comparer)
+      {
+         if (list.Count < 2)
+            return;
+         for (int index = 0; list.Count - 1 < index; index++)
+         {
+            var left = list[index];
+            var right = list[index + 1];
+            if (comparer.Compare(left, right) > 0)
+            {
+               list.RemoveAt(index + 1);
+               list.Insert(index, right);
+               index = -1;
+            }
+         }
+      }
+
+      public static ArrayList GetRange(this ArrayList list, int start, int length)
+      {
+         var result = new ArrayList();
+         for (var index = start; index < start + length && index < list.Count; index++)
+         {
+            result.Add(list[index]);
+         }
+         return result;
+      }
+
+      //public static string Join<T>(string separator, IEnumerable<T> values)
+      //{
+      //   var builder = new StringBuilder();
+      //   separator = separator ?? String.Empty;
+      //   if (values != null)
+      //   {
+      //      foreach (var value in values)
+      //      {
+      //         builder.Append(value);
+      //         builder.Append(separator);
+      //      }
+      //      if (builder.Length > 0)
+      //         builder.Length -= separator.Length;
+      //   }
+
+      //   return builder.ToString();
+      //}
    }
 }

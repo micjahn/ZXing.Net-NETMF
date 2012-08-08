@@ -80,7 +80,7 @@ namespace ZXing.Client.Result
 
          foreach (string t in value)
          {
-            if (!string.IsNullOrEmpty(t))
+            if (t != null && t.Length > 0)
             {
                if (result.Length > 0)
                {

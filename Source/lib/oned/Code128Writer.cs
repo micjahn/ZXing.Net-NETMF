@@ -15,7 +15,7 @@
  */
 
 using System;
-using System.Collections.Generic;
+using System.Collections;
 using ZXing.Common;
 
 namespace ZXing.OneD
@@ -48,7 +48,7 @@ namespace ZXing.OneD
                               BarcodeFormat format,
                               int width,
                               int height,
-                              IDictionary<EncodeHintType, object> hints)
+                              IDictionary hints)
       {
          if (format != BarcodeFormat.CODE_128)
          {
@@ -85,7 +85,7 @@ namespace ZXing.OneD
             }
          }
 
-         var patterns = new List<int[]>(); // temporary storage for patterns
+         var patterns = new ArrayList(); // temporary storage for patterns
          int checkSum = 0;
          int checkWeight = 1;
          int codeSet = 0; // selected code (CODE_CODE_B or CODE_CODE_C)

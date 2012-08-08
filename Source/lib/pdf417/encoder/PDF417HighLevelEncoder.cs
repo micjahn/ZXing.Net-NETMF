@@ -151,7 +151,7 @@ namespace ZXing.PDF417.Internal
       /// </summary>
       private static byte[] getBytesForMessage(String msg)
       {
-         return Encoding.GetEncoding("CP437").GetBytes(msg);
+         return Encoding.UTF8.GetBytes(msg);
       }
 
       /// <summary>

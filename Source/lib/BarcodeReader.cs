@@ -1,12 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
+
 #if !SILVERLIGHT
 #if !UNITY
-using System.Drawing;
+using System.Collections;
 #endif
 #else
 using System.Windows.Media.Imaging;
 #endif
+using Microsoft.SPOT;
 
 using ZXing.Common;
 
@@ -17,9 +18,12 @@ namespace ZXing
    /// </summary>
    public class BarcodeReader : IBarcodeReader
    {
+      public delegate LuminanceSource CreateLuminanceSourceDelegate(Bitmap bmp);
+      public delegate Binarizer CreateBinarizerDelegate(LuminanceSource luminanceSource);
+
 #if !SILVERLIGHT
 #if !UNITY
-      private static readonly Func<Bitmap, LuminanceSource> defaultCreateLuminanceSource =
+      private static readonly CreateLuminanceSourceDelegate defaultCreateLuminanceSource =
          (bitmap) => new RGBLuminanceSource(bitmap, bitmap.Width, bitmap.Height);
 #else
       private static readonly Func<byte[], int, int, LuminanceSource> defaultCreateLuminanceSource =
@@ -29,21 +33,21 @@ namespace ZXing
       private static readonly Func<WriteableBitmap, LuminanceSource> defaultCreateLuminanceSource =
          (bitmap) => new RGBLuminanceSource(bitmap, bitmap.PixelWidth, bitmap.PixelHeight);
 #endif
-      private static readonly Func<LuminanceSource, Binarizer> defaultCreateBinarizer =
+      private static readonly CreateBinarizerDelegate defaultCreateBinarizer =
          (luminanceSource) => new HybridBinarizer(luminanceSource);
 
       private Reader reader;
-      private readonly IDictionary<DecodeHintType, object> hints;
+      private readonly Hashtable hints;
 #if !SILVERLIGHT
 #if !UNITY
-      private Func<Bitmap, LuminanceSource> createLuminanceSource;
+      private CreateLuminanceSourceDelegate createLuminanceSource;
 #else
       private Func<byte[], int, int, LuminanceSource> createLuminanceSource;
 #endif
 #else
       private readonly Func<WriteableBitmap, LuminanceSource> createLuminanceSource;
 #endif
-      private readonly Func<LuminanceSource, Binarizer> createBinarizer;
+      private readonly CreateBinarizerDelegate createBinarizer;
       private bool usePreviousState;
 
       /// <summary>
@@ -66,11 +70,11 @@ namespace ZXing
       /// <value>
       /// The result point callback.
       /// </value>
-      public event Action<ResultPoint> ResultPointFound
+      public event ResultPointHandler ResultPointFound
       {
          add
          {
-            if (!hints.ContainsKey(DecodeHintType.NEED_RESULT_POINT_CALLBACK))
+            if (!hints.Contains(DecodeHintType.NEED_RESULT_POINT_CALLBACK))
             {
                ResultPointCallback callback = resultPoint =>
                                                  {
@@ -91,12 +95,12 @@ namespace ZXing
          }
       }
 
-      private event Action<ResultPoint> explicitResultPointFound;
+      private event ResultPointHandler explicitResultPointFound;
 
       /// <summary>
       /// event is executed if a result was found via decode
       /// </summary>
-      public event Action<Result> ResultFound;
+      public event ResultHandler ResultFound;
 
       /// <summary>
       /// Gets or sets a flag which cause a deeper look into the bitmap
@@ -108,7 +112,7 @@ namespace ZXing
       {
          get
          {
-            if (hints.ContainsKey(DecodeHintType.TRY_HARDER))
+            if (hints.Contains(DecodeHintType.TRY_HARDER))
                return (bool)hints[DecodeHintType.TRY_HARDER];
             return false;
          }
@@ -121,7 +125,7 @@ namespace ZXing
             }
             else
             {
-               if (hints.ContainsKey(DecodeHintType.TRY_HARDER))
+               if (hints.Contains(DecodeHintType.TRY_HARDER))
                {
                   hints.Remove(DecodeHintType.TRY_HARDER);
                   usePreviousState = false;
@@ -141,7 +145,7 @@ namespace ZXing
       {
          get
          {
-            if (hints.ContainsKey(DecodeHintType.PURE_BARCODE))
+            if (hints.Contains(DecodeHintType.PURE_BARCODE))
                return (bool)hints[DecodeHintType.PURE_BARCODE];
             return false;
          }
@@ -154,7 +158,7 @@ namespace ZXing
             }
             else
             {
-               if (hints.ContainsKey(DecodeHintType.PURE_BARCODE))
+               if (hints.Contains(DecodeHintType.PURE_BARCODE))
                {
                   hints.Remove(DecodeHintType.PURE_BARCODE);
                   usePreviousState = false;
@@ -173,7 +177,7 @@ namespace ZXing
       {
          get
          {
-            if (hints.ContainsKey(DecodeHintType.CHARACTER_SET))
+            if (hints.Contains(DecodeHintType.CHARACTER_SET))
                return (string)hints[DecodeHintType.CHARACTER_SET];
             return null;
          }
@@ -186,7 +190,7 @@ namespace ZXing
             }
             else
             {
-               if (hints.ContainsKey(DecodeHintType.CHARACTER_SET))
+               if (hints.Contains(DecodeHintType.CHARACTER_SET))
                {
                   hints.Remove(DecodeHintType.CHARACTER_SET);
                   usePreviousState = false;
@@ -202,12 +206,12 @@ namespace ZXing
       /// <value>
       /// The possible formats.
       /// </value>
-      public IList<BarcodeFormat> PossibleFormats
+      public IList PossibleFormats
       {
          get
          {
-            if (hints.ContainsKey(DecodeHintType.POSSIBLE_FORMATS))
-               return (IList<BarcodeFormat>)hints[DecodeHintType.POSSIBLE_FORMATS];
+            if (hints.Contains(DecodeHintType.POSSIBLE_FORMATS))
+               return (IList)hints[DecodeHintType.POSSIBLE_FORMATS];
             return null;
          }
          set
@@ -219,7 +223,7 @@ namespace ZXing
             }
             else
             {
-               if (hints.ContainsKey(DecodeHintType.POSSIBLE_FORMATS))
+               if (hints.Contains(DecodeHintType.POSSIBLE_FORMATS))
                {
                   hints.Remove(DecodeHintType.POSSIBLE_FORMATS);
                   usePreviousState = false;
@@ -237,7 +241,7 @@ namespace ZXing
       /// <value>
       /// The function to create a luminance source object.
       /// </value>
-      public Func<Bitmap, LuminanceSource> CreateLuminanceSource
+      public CreateLuminanceSourceDelegate CreateLuminanceSource
 #else
       /// <summary>
       /// Optional: Gets or sets the function to create a luminance source object for a bitmap.
@@ -272,7 +276,7 @@ namespace ZXing
       /// <value>
       /// The function to create a binarizer object.
       /// </value>
-      public Func<LuminanceSource, Binarizer> CreateBinarizer
+      public CreateBinarizerDelegate CreateBinarizer
       {
          get
          {
@@ -300,20 +304,20 @@ namespace ZXing
       public BarcodeReader(Reader reader,
 #if !SILVERLIGHT
 #if !UNITY
-         Func<Bitmap, LuminanceSource> createLuminanceSource,
+         CreateLuminanceSourceDelegate createLuminanceSource,
 #else
          Func<byte[], int, int, LuminanceSource> createLuminanceSource,
 #endif
 #else
          Func<WriteableBitmap, LuminanceSource> createLuminanceSource,
 #endif
-         Func<LuminanceSource, Binarizer> createBinarizer
+         CreateBinarizerDelegate createBinarizer
          )
       {
          this.reader = reader ?? new MultiFormatReader();
          this.createLuminanceSource = createLuminanceSource ?? defaultCreateLuminanceSource;
          this.createBinarizer = createBinarizer ?? defaultCreateBinarizer;
-         hints = new Dictionary<DecodeHintType, object>();
+         hints = new Hashtable();
          usePreviousState = false;
       }
 
@@ -389,7 +393,7 @@ namespace ZXing
             {
                result.putMetadata(ResultMetadataType.ORIENTATION, rotationCount*90);
             }
-            else if (!result.ResultMetadata.ContainsKey(ResultMetadataType.ORIENTATION))
+            else if (!result.ResultMetadata.Contains(ResultMetadataType.ORIENTATION))
             {
                result.ResultMetadata[ResultMetadataType.ORIENTATION] = rotationCount*90;
             }

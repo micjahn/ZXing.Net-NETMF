@@ -15,7 +15,7 @@
 */
 
 using System;
-using System.Collections.Generic;
+using System.Collections;
 using System.Text.RegularExpressions;
 
 namespace ZXing.Client.Result
@@ -199,14 +199,14 @@ namespace ZXing.Client.Result
          return value.Length >= max && ALPHANUM.Match(value.Substring(offset, length)).Success;
       }
 
-      internal static IDictionary<string, string> parseNameValuePairs(String uri)
+      internal static Hashtable parseNameValuePairs(String uri)
       {
          int paramStart = uri.IndexOf('?');
          if (paramStart < 0)
          {
             return null;
          }
-         var result = new Dictionary<String, String>(3);
+         var result = new Hashtable(3);
          foreach (var keyValue in AMPERSAND.Split(uri.Substring(paramStart + 1)))
          {
             appendKeyValue(keyValue, result);
@@ -215,7 +215,7 @@ namespace ZXing.Client.Result
       }
 
       private static void appendKeyValue(String keyValue,
-                                         IDictionary<String, String> result)
+                                         Hashtable result)
       {
          String[] keyValueTokens = EQUALS.Split(keyValue, 2);
          if (keyValueTokens.Length == 2)
@@ -238,7 +238,7 @@ namespace ZXing.Client.Result
 
       internal static String[] matchPrefixedField(String prefix, String rawText, char endChar, bool trim)
       {
-         IList<string> matches = null;
+         IList matches = null;
          int i = 0;
          int max = rawText.Length;
          while (i < max)
@@ -272,7 +272,7 @@ namespace ZXing.Client.Result
                   // found a match
                   if (matches == null)
                   {
-                     matches = new List<string>();
+                     matches = new ArrayList();
                   }
                   String element = unescapeBackslash(rawText.Substring(start, (i) - (start)));
                   if (trim)

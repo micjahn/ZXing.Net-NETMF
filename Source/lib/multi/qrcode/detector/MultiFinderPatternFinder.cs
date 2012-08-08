@@ -15,7 +15,7 @@
  */
 
 using System;
-using System.Collections.Generic;
+using System.Collections;
 using ZXing.Common;
 using ZXing.QrCode.Internal;
 
@@ -66,11 +66,13 @@ namespace ZXing.Multi.QrCode.Internal
       /// <summary>
       /// A comparator that orders FinderPatterns by their estimated module size.
       /// </summary>
-      private sealed class ModuleSizeComparator : IComparer<FinderPattern>
+      private sealed class ModuleSizeComparator : IComparer
       {
-         public int Compare(FinderPattern center1, FinderPattern center2)
+         public int Compare(object center1, object center2)
          {
-            float value = center2.EstimatedModuleSize - center1.EstimatedModuleSize;
+            var center1Tmp = (FinderPattern)center1;
+            var center2Tmp = (FinderPattern)center2;
+            float value = center2Tmp.EstimatedModuleSize - center1Tmp.EstimatedModuleSize;
             return value < 0.0 ? -1 : value > 0.0 ? 1 : 0;
          }
       }
@@ -98,7 +100,7 @@ namespace ZXing.Multi.QrCode.Internal
       /// </summary>
       private FinderPattern[][] selectMutipleBestPatterns()
       {
-         List<FinderPattern> possibleCenters = PossibleCenters;
+         IList possibleCenters = PossibleCenters;
          int size = possibleCenters.Count;
 
          if (size < 3)
@@ -116,9 +118,9 @@ namespace ZXing.Multi.QrCode.Internal
                       {
                          new FinderPattern[]
                             {
-                               possibleCenters[0],
-                               possibleCenters[1],
-                               possibleCenters[2]
+                               (FinderPattern)possibleCenters[0],
+                               (FinderPattern)possibleCenters[1],
+                               (FinderPattern)possibleCenters[2]
                             }
                       };
          }
@@ -141,11 +143,11 @@ namespace ZXing.Multi.QrCode.Internal
           * So, if the layout seems right, lets have the decoder try to decode.     
           */
 
-         List<FinderPattern[]> results = new List<FinderPattern[]>(); // holder for the results
+         var results = new ArrayList(); // holder for the results
 
          for (int i1 = 0; i1 < (size - 2); i1++)
          {
-            FinderPattern p1 = possibleCenters[i1];
+            FinderPattern p1 = (FinderPattern)possibleCenters[i1];
             if (p1 == null)
             {
                continue;
@@ -153,16 +155,16 @@ namespace ZXing.Multi.QrCode.Internal
 
             for (int i2 = i1 + 1; i2 < (size - 1); i2++)
             {
-               FinderPattern p2 = possibleCenters[i2];
+               FinderPattern p2 = (FinderPattern)possibleCenters[i2];
                if (p2 == null)
                {
                   continue;
                }
 
                // Compare the expected module sizes; if they are really off, skip
-               float vModSize12 = (p1.EstimatedModuleSize - p2.EstimatedModuleSize) /
+               var vModSize12 = (p1.EstimatedModuleSize - p2.EstimatedModuleSize) /
                    Math.Min(p1.EstimatedModuleSize, p2.EstimatedModuleSize);
-               float vModSize12A = Math.Abs(p1.EstimatedModuleSize - p2.EstimatedModuleSize);
+               var vModSize12A = Math.Abs(p1.EstimatedModuleSize - p2.EstimatedModuleSize);
                if (vModSize12A > DIFF_MODSIZE_CUTOFF && vModSize12 >= DIFF_MODSIZE_CUTOFF_PERCENT)
                {
                   // break, since elements are ordered by the module size deviation there cannot be
@@ -172,16 +174,16 @@ namespace ZXing.Multi.QrCode.Internal
 
                for (int i3 = i2 + 1; i3 < size; i3++)
                {
-                  FinderPattern p3 = possibleCenters[i3];
+                  FinderPattern p3 = (FinderPattern)possibleCenters[i3];
                   if (p3 == null)
                   {
                      continue;
                   }
 
                   // Compare the expected module sizes; if they are really off, skip
-                  float vModSize23 = (p2.EstimatedModuleSize - p3.EstimatedModuleSize) /
+                  var vModSize23 = (p2.EstimatedModuleSize - p3.EstimatedModuleSize) /
                       Math.Min(p2.EstimatedModuleSize, p3.EstimatedModuleSize);
-                  float vModSize23A = Math.Abs(p2.EstimatedModuleSize - p3.EstimatedModuleSize);
+                  var vModSize23A = Math.Abs(p2.EstimatedModuleSize - p3.EstimatedModuleSize);
                   if (vModSize23A > DIFF_MODSIZE_CUTOFF && vModSize23 >= DIFF_MODSIZE_CUTOFF_PERCENT)
                   {
                      // break, since elements are ordered by the module size deviation there cannot be
@@ -207,7 +209,7 @@ namespace ZXing.Multi.QrCode.Internal
                   }
 
                   // Calculate the difference of the edge lengths in percent
-                  float vABBC = Math.Abs((dA - dB) / Math.Min(dA, dB));
+                  var vABBC = Math.Abs((dA - dB) / Math.Min(dA, dB));
                   if (vABBC >= 0.1f)
                   {
                      continue;
@@ -216,7 +218,7 @@ namespace ZXing.Multi.QrCode.Internal
                   // Calculate the diagonal length by assuming a 90° angle at topleft
                   float dCpy = (float)Math.Sqrt(dA * dA + dB * dB);
                   // Compare to the real distance in %
-                  float vPyC = Math.Abs((dC - dCpy) / Math.Min(dC, dCpy));
+                  var vPyC = Math.Abs((dC - dCpy) / Math.Min(dC, dCpy));
 
                   if (vPyC >= 0.1f)
                   {
@@ -231,16 +233,16 @@ namespace ZXing.Multi.QrCode.Internal
 
          if (results.Count != 0)
          {
-            return results.ToArray();
+            return (FinderPattern[][])results.ToArray();
          }
 
          // Nothing found!
          throw NotFoundException.Instance;
       }
 
-      public FinderPatternInfo[] findMulti(IDictionary<DecodeHintType, object> hints)
+      public FinderPatternInfo[] findMulti(Hashtable hints)
       {
-         bool tryHarder = hints != null && hints.ContainsKey(DecodeHintType.TRY_HARDER);
+         bool tryHarder = hints != null && hints.Contains(DecodeHintType.TRY_HARDER);
          BitMatrix image = Image;
          int maxI = image.Height;
          int maxJ = image.Width;
@@ -331,7 +333,7 @@ namespace ZXing.Multi.QrCode.Internal
             } // end if foundPatternCross
          } // for i=iSkip-1 ...
          FinderPattern[][] patternInfo = selectMutipleBestPatterns();
-         List<FinderPatternInfo> result = new List<FinderPatternInfo>();
+         var result = new ArrayList();
          foreach (FinderPattern[] pattern in patternInfo)
          {
             ResultPoint.orderBestPatterns(pattern);
@@ -344,7 +346,7 @@ namespace ZXing.Multi.QrCode.Internal
          }
          else
          {
-            return result.ToArray();
+            return (FinderPatternInfo[])result.ToArray();
          }
       }
    }

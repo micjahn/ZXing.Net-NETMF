@@ -15,7 +15,8 @@
 */
 
 using System;
-using System.Collections.Generic;
+using System.Collections;
+
 
 namespace ZXing.Client.Result
 {
@@ -37,9 +38,11 @@ namespace ZXing.Client.Result
       override public ParsedResult parse(ZXing.Result result)
       {
          String rawText = result.Text;
-         if (rawText == null ||
-             !(rawText.StartsWith("sms:") || rawText.StartsWith("SMS:") ||
-               rawText.StartsWith("mms:") || rawText.StartsWith("MMS:")))
+         if (rawText == null)
+            return null;
+         var rawTextStart = rawText.Substring(0, 4).ToUpper();
+         if (!(String.Compare(rawTextStart, "sms:") == 0 ||
+               String.Compare(rawTextStart, "mms:") == 0))
          {
             return null;
          }
@@ -51,8 +54,8 @@ namespace ZXing.Client.Result
          var querySyntax = false;
          if (nameValuePairs != null && nameValuePairs.Count != 0)
          {
-            subject = nameValuePairs["subject"];
-            body = nameValuePairs["body"];
+            subject = (string)nameValuePairs["subject"];
+            body = (string)nameValuePairs["body"];
             querySyntax = true;
          }
 
@@ -72,8 +75,8 @@ namespace ZXing.Client.Result
 
          int lastComma = -1;
          int comma;
-         var numbers = new List<String>(1);
-         var vias = new List<String>(1);
+         var numbers = new ArrayList();
+         var vias = new ArrayList();
          while ((comma = smsURIWithoutQuery.IndexOf(',', lastComma + 1)) > lastComma)
          {
             String numberPart = smsURIWithoutQuery.Substring(lastComma + 1, comma);
@@ -88,8 +91,8 @@ namespace ZXing.Client.Result
                                     body);
       }
 
-      private static void addNumberVia(ICollection<String> numbers,
-                                       ICollection<String> vias,
+      private static void addNumberVia(IList numbers,
+                                       IList vias,
                                        String numberPart)
       {
          int numberEnd = numberPart.IndexOf(';');
@@ -103,7 +106,7 @@ namespace ZXing.Client.Result
             numbers.Add(numberPart.Substring(0, numberEnd));
             String maybeVia = numberPart.Substring(numberEnd + 1);
             String via;
-            if (maybeVia.StartsWith("via="))
+            if (String.Compare(maybeVia.Substring(0, 4), "via=") == 0)
             {
                via = maybeVia.Substring(4);
             }

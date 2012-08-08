@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-using System.Collections.Generic;
 
+using System.Collections;
 using ZXing.Common;
 using ZXing.OneD.RSS;
 using ZXing.OneD.RSS.Expanded;
@@ -28,15 +28,15 @@ namespace ZXing.OneD
    /// </summary>
    public sealed class MultiFormatOneDReader : OneDReader
    {
-      private readonly IList<OneDReader> readers;
+      private readonly ArrayList readers;
 
-      public MultiFormatOneDReader(IDictionary<DecodeHintType, object> hints)
+      public MultiFormatOneDReader(Hashtable hints)
       {
-         var possibleFormats = hints == null || !hints.ContainsKey(DecodeHintType.POSSIBLE_FORMATS) ? null :
-             (IList<BarcodeFormat>)hints[DecodeHintType.POSSIBLE_FORMATS];
-         bool useCode39CheckDigit = hints != null && hints.ContainsKey(DecodeHintType.ASSUME_CODE_39_CHECK_DIGIT) &&
+         var possibleFormats = hints == null || !hints.Contains(DecodeHintType.POSSIBLE_FORMATS) ? null :
+             (ArrayList)hints[DecodeHintType.POSSIBLE_FORMATS];
+         bool useCode39CheckDigit = hints != null && hints.Contains(DecodeHintType.ASSUME_CODE_39_CHECK_DIGIT) &&
              hints[DecodeHintType.ASSUME_CODE_39_CHECK_DIGIT] != null;
-         this.readers = new List<OneDReader>();
+         this.readers = new ArrayList();
          if (possibleFormats != null)
          {
             if (possibleFormats.Contains(BarcodeFormat.EAN_13) ||
@@ -90,7 +90,7 @@ namespace ZXing.OneD
 
       override public Result decodeRow(int rowNumber,
                               BitArray row,
-                              IDictionary<DecodeHintType, object> hints)
+                              Hashtable hints)
       {
          foreach (OneDReader reader in readers)
          {

@@ -261,7 +261,8 @@ namespace ZXing.PDF417.Internal
          while (i < length)
          {
             int subModeCh = textCompactionData[i];
-            char? ch = null;
+            bool hasCh = false;
+            char ch = ' ';
             switch (subMode)
             {
                case Mode.ALPHA:
@@ -270,12 +271,14 @@ namespace ZXing.PDF417.Internal
                   {
                      // Upper case Alpha Character
                      ch = (char)('A' + subModeCh);
+                     hasCh = true;
                   }
                   else
                   {
                      if (subModeCh == 26)
                      {
                         ch = ' ';
+                        hasCh = true;
                      }
                      else if (subModeCh == LL)
                      {
@@ -307,12 +310,14 @@ namespace ZXing.PDF417.Internal
                   if (subModeCh < 26)
                   {
                      ch = (char)('a' + subModeCh);
+                     hasCh = true;
                   }
                   else
                   {
                      if (subModeCh == 26)
                      {
                         ch = ' ';
+                        hasCh = true;
                      }
                      else if (subModeCh == AS)
                      {
@@ -346,6 +351,7 @@ namespace ZXing.PDF417.Internal
                   if (subModeCh < PL)
                   {
                      ch = MIXED_CHARS[subModeCh];
+                     hasCh = true;
                   }
                   else
                   {
@@ -356,6 +362,7 @@ namespace ZXing.PDF417.Internal
                      else if (subModeCh == 26)
                      {
                         ch = ' ';
+                        hasCh = true;
                      }
                      else if (subModeCh == LL)
                      {
@@ -387,6 +394,7 @@ namespace ZXing.PDF417.Internal
                   if (subModeCh < PAL)
                   {
                      ch = PUNCT_CHARS[subModeCh];
+                     hasCh = true;
                   }
                   else
                   {
@@ -411,12 +419,14 @@ namespace ZXing.PDF417.Internal
                   if (subModeCh < 26)
                   {
                      ch = (char)('A' + subModeCh);
+                     hasCh = true;
                   }
                   else
                   {
                      if (subModeCh == 26)
                      {
                         ch = ' ';
+                        hasCh = true;
                      }
                      else if (subModeCh == TEXT_COMPACTION_MODE_LATCH)
                      {
@@ -431,6 +441,7 @@ namespace ZXing.PDF417.Internal
                   if (subModeCh < PAL)
                   {
                      ch = PUNCT_CHARS[subModeCh];
+                     hasCh = true;
                   }
                   else
                   {
@@ -451,10 +462,10 @@ namespace ZXing.PDF417.Internal
                   }
                   break;
             }
-            if (ch != null)
+            if (hasCh)
             {
                // Append decoded character to result
-               result.Append(ch.Value);
+               result.Append(ch);
             }
             i++;
          }

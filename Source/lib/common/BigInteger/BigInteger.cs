@@ -1,9 +1,11 @@
 ﻿using System;
+#if !MF_FRAMEWORK
 using System.Runtime.Serialization;
-#if !(WINDOWS_PHONE70 || WINDOWS_PHONE71 || SILVERLIGHT4 || SILVERLIGHT5)
+using System.Security.Permissions;
+#endif
+#if !(WINDOWS_PHONE70 || WINDOWS_PHONE71 || SILVERLIGHT4 || SILVERLIGHT5 || MF_FRAMEWORK)
 using System.Runtime.Serialization.Formatters;
 #endif
-using System.Security.Permissions;
 using System.Text;
 
 
@@ -14,14 +16,17 @@ namespace BigIntegerLibrary
     /// .NET 2.0 class for handling of very large integers, up to 10240 binary digits or
     /// approximately (safe to use) 3000 decimal digits.
    /// </summary>
-#if !(WINDOWS_PHONE70 || WINDOWS_PHONE71 || SILVERLIGHT4 || SILVERLIGHT5)
+#if !(WINDOWS_PHONE70 || WINDOWS_PHONE71 || SILVERLIGHT4 || SILVERLIGHT5 || MF_FRAMEWORK)
     [Serializable, CLSCompliant(true)]
     public sealed class BigInteger : ISerializable, 
 #else
-    [CLSCompliant(true)]
+   [CLSCompliant(true)]
     public sealed class BigInteger :  
 #endif
-       IEquatable<BigInteger>, IComparable, IComparable<BigInteger>
+ IComparable
+#if !(MF_FRAMEWORK)
+       , IEquatable<BigInteger>, IComparable<BigInteger>
+#endif
     {
 
         #region Fields
@@ -199,7 +204,7 @@ namespace BigIntegerLibrary
             }
         }
 
-#if !(WINDOWS_PHONE70 || WINDOWS_PHONE71 || SILVERLIGHT4 || SILVERLIGHT5)
+#if !(WINDOWS_PHONE70 || WINDOWS_PHONE71 || SILVERLIGHT4 || SILVERLIGHT5 || MF_FRAMEWORK)
         /// <summary>
         /// Constructor deserializing a BigInteger.
         /// </summary>
@@ -222,12 +227,12 @@ namespace BigIntegerLibrary
 #endif
 
 
-#endregion
+        #endregion
 
 
         #region Public Methods
 
-#if !(WINDOWS_PHONE70 || WINDOWS_PHONE71 || SILVERLIGHT4 || SILVERLIGHT5)
+#if !(WINDOWS_PHONE70 || WINDOWS_PHONE71 || SILVERLIGHT4 || SILVERLIGHT5 || MF_FRAMEWORK)
         /// <summary>
         /// BigInteger serializing method, which should not be called manually.
         /// </summary>
@@ -319,7 +324,7 @@ namespace BigIntegerLibrary
 
         public static BigInteger Parse(string str)
         {
-           if (String.IsNullOrEmpty(str))
+           if (str == null || str.Length == 0)
               return Zero;
 
            var result = new BigInteger();
@@ -338,7 +343,7 @@ namespace BigIntegerLibrary
 
            for (var start = str.Length - 1; start >= idx; start--, pos++)
            {
-              result.digits[pos] = Convert.ToInt64(str[start]);
+              result.digits[pos] = Convert.ToInt64(str[start].ToString());
            }
            result.size = pos + 1;
 
@@ -652,7 +657,7 @@ namespace BigIntegerLibrary
         public static BigInteger Division(BigInteger a, BigInteger b)
         {
             if (b == Zero)
-                throw new BigIntegerException("Cannot divide by zero.", new DivideByZeroException());
+               throw new BigIntegerException("Cannot divide by zero.", new InvalidOperationException());
 
             if (a == Zero)
                 return Zero;
@@ -683,7 +688,7 @@ namespace BigIntegerLibrary
         public static BigInteger Modulo(BigInteger a, BigInteger b)
         {
             if (b == Zero)
-                throw new BigIntegerException("Cannot divide by zero.", new DivideByZeroException());
+                throw new BigIntegerException("Cannot divide by zero.", new InvalidOperationException());
 
             BigInteger res;
 

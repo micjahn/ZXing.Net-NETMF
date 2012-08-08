@@ -15,8 +15,7 @@
 */
 
 using System;
-using System.Collections.Generic;
-
+using System.Collections;
 using ZXing.Common;
 using ZXing.OneD;
 using ZXing.PDF417.Internal;
@@ -34,28 +33,39 @@ namespace ZXing
    /// </author>
    public sealed class MultiFormatWriter : Writer
    {
-      private static readonly IDictionary<BarcodeFormat, Func<Writer>> formatMap;
+      private delegate Writer CreateWriterDelegate();
+
+      private static readonly Hashtable formatMap;
 
       static MultiFormatWriter()
       {
-         formatMap = new Dictionary<BarcodeFormat, Func<Writer>>
+         CreateWriterDelegate createEAN8Writer = () => new EAN8Writer();
+         CreateWriterDelegate createEAN13Writer = () => new EAN13Writer();
+         CreateWriterDelegate createUPCAWriter = () => new UPCAWriter();
+         CreateWriterDelegate createQRCodeWriter = () => new QRCodeWriter();
+         CreateWriterDelegate createCode39Writer = () => new Code39Writer();
+         CreateWriterDelegate createCode128Writer = () => new Code128Writer();
+         CreateWriterDelegate createITFWriter = () => new ITFWriter();
+         CreateWriterDelegate createPDF417Writer = () => new PDF417Writer();
+         CreateWriterDelegate createCodaBarWriter = () => new CodaBarWriter();
+         formatMap = new Hashtable
                         {
-                           {BarcodeFormat.EAN_8, () => new EAN8Writer()},
-                           {BarcodeFormat.EAN_13, () => new EAN13Writer()},
-                           {BarcodeFormat.UPC_A, () => new UPCAWriter()},
-                           {BarcodeFormat.QR_CODE, () => new QRCodeWriter()},
-                           {BarcodeFormat.CODE_39, () => new Code39Writer()},
-                           {BarcodeFormat.CODE_128, () => new Code128Writer()},
-                           {BarcodeFormat.ITF, () => new ITFWriter()},
-                           {BarcodeFormat.PDF_417, () => new PDF417Writer()},
-                           {BarcodeFormat.CODABAR, () => new CodaBarWriter()},
+                           {BarcodeFormat.EAN_8, createEAN8Writer},
+                           {BarcodeFormat.EAN_13, createEAN13Writer},
+                           {BarcodeFormat.UPC_A, createUPCAWriter},
+                           {BarcodeFormat.QR_CODE, createQRCodeWriter},
+                           {BarcodeFormat.CODE_39, createCode39Writer},
+                           {BarcodeFormat.CODE_128, createCode128Writer},
+                           {BarcodeFormat.ITF, createITFWriter},
+                           {BarcodeFormat.PDF_417, createPDF417Writer},
+                           {BarcodeFormat.CODABAR, createCodaBarWriter},
                         };
       }
 
       /// <summary>
       /// Gets the collection of supported writers.
       /// </summary>
-      public static ICollection<BarcodeFormat> SupportedWriters
+      public static ICollection SupportedWriters
       {
          get { return formatMap.Keys; }
       }
@@ -65,12 +75,12 @@ namespace ZXing
          return encode(contents, format, width, height, null);
       }
 
-      public BitMatrix encode(String contents, BarcodeFormat format, int width, int height, IDictionary<EncodeHintType, object> hints)
+      public BitMatrix encode(String contents, BarcodeFormat format, int width, int height, IDictionary hints)
       {
-         if (!formatMap.ContainsKey(format))
+         if (!formatMap.Contains(format))
             throw new ArgumentException("No encoder available for format " + format);
 
-         return formatMap[format]().encode(contents, format, width, height, hints);
+         return ((CreateWriterDelegate)(formatMap[format]))().encode(contents, format, width, height, hints);
       }
    }
 }

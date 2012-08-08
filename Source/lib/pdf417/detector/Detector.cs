@@ -15,8 +15,7 @@
  */
 
 using System;
-using System.Collections.Generic;
-
+using System.Collections;
 using ZXing.Common;
 using ZXing.Common.Detector;
 
@@ -74,12 +73,12 @@ namespace ZXing.PDF417.Internal
       /// <param name="hints">optional hints to detector</param>
       /// <returns><see cref="DetectorResult" />encapsulating results of detecting a PDF417 Code</returns>
       /// </summary>
-      public DetectorResult detect(IDictionary<DecodeHintType, object> hints)
+      public DetectorResult detect(Hashtable hints)
       {
          // Fetch the 1 bit matrix once up front.
          BitMatrix matrix = image.BlackMatrix;
 
-         bool tryHarder = hints != null && hints.ContainsKey(DecodeHintType.TRY_HARDER);
+         bool tryHarder = hints != null && hints.Contains(DecodeHintType.TRY_HARDER);
 
          // Try to find the vertices assuming the image is upright.
          ResultPoint[] vertices = findVertices(matrix, tryHarder);

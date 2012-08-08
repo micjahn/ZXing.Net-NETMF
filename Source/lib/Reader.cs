@@ -14,7 +14,7 @@
 * limitations under the License.
 */
 
-using System.Collections.Generic;
+using System.Collections;
 
 namespace ZXing
 {
@@ -58,7 +58,7 @@ namespace ZXing
       /// <returns> String which the barcode encodes
       /// </returns>
       /// <throws>  ReaderException if the barcode cannot be located or decoded for any reason </throws>
-      Result decode(BinaryBitmap image, IDictionary<DecodeHintType, object> hints);
+      Result decode(BinaryBitmap image, Hashtable hints);
 
       /// <summary>
       /// Resets any internal state the implementation has after a decode, to prepare it

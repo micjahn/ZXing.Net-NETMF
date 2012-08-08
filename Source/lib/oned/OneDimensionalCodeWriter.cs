@@ -15,8 +15,7 @@
  */
 
 using System;
-using System.Collections.Generic;
-
+using System.Collections;
 using ZXing.Common;
 
 namespace ZXing.OneD
@@ -44,7 +43,7 @@ namespace ZXing.OneD
                               BarcodeFormat format,
                               int width,
                               int height,
-                              IDictionary<EncodeHintType, object> hints)
+                              IDictionary hints)
       {
          if (contents.Length == 0)
          {
@@ -60,10 +59,10 @@ namespace ZXing.OneD
          int sidesMargin = DefaultMargin;
          if (hints != null)
          {
-            var sidesMarginInt = hints.ContainsKey(EncodeHintType.MARGIN) ? (int)hints[EncodeHintType.MARGIN] : (int?)null;
-            if (sidesMarginInt != null)
+            var sidesMarginInt = hints.Contains(EncodeHintType.MARGIN) ? (int)hints[EncodeHintType.MARGIN] : -1;
+            if (sidesMarginInt > 0)
             {
-               sidesMargin = sidesMarginInt.Value;
+               sidesMargin = sidesMarginInt;
             }
          }
 

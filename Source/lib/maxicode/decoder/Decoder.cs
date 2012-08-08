@@ -15,7 +15,7 @@
  */
 
 using System;
-using System.Collections.Generic;
+using System.Collections;
 using ZXing.Common;
 using ZXing.Common.ReedSolomon;
 
@@ -46,7 +46,7 @@ namespace ZXing.Maxicode.Internal
       }
 
       public DecoderResult decode(BitMatrix bits,
-                                  IDictionary<DecodeHintType, object> hints)
+                                  Hashtable hints)
       {
          BitMatrixParser parser = new BitMatrixParser(bits);
          byte[] codewords = parser.readCodewords();

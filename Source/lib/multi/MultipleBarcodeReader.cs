@@ -14,7 +14,8 @@
 * limitations under the License.
 */
 
-using System.Collections.Generic;
+
+using System.Collections;
 
 namespace ZXing.Multi
 {
@@ -31,6 +32,6 @@ namespace ZXing.Multi
    {
       Result[] decodeMultiple(BinaryBitmap image);
 
-      Result[] decodeMultiple(BinaryBitmap image, IDictionary<DecodeHintType, object> hints);
+      Result[] decodeMultiple(BinaryBitmap image, Hashtable hints);
    }
 }

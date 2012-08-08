@@ -50,7 +50,7 @@ namespace ZXing
          : base(width, height)
       {
          luminances = new byte[width * height];
-         Buffer.BlockCopy(luminanceArray, 0, luminances, 0, width * height);
+         Array.Copy(luminanceArray, 0, luminances, 0, width * height);
       }
 
       /// <summary>

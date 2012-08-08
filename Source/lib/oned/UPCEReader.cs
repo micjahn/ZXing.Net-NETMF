@@ -106,7 +106,7 @@ namespace ZXing.OneD
             {
                if (lgPatternFound == NUMSYS_AND_CHECK_DIGIT_PATTERNS[numSys][d])
                {
-                  resultString.Insert(0, new[] { (char)('0' + numSys) });
+                  resultString.Insert(0, new[] { (char)('0' + numSys) }, 0, 1);
                   resultString.Append((char)('0' + d));
                   return true;
                }

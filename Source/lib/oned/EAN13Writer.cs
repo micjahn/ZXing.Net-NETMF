@@ -15,7 +15,7 @@
  */
 
 using System;
-using System.Collections.Generic;
+using System.Collections;
 using ZXing.Common;
 
 namespace ZXing.OneD
@@ -37,7 +37,7 @@ namespace ZXing.OneD
                               BarcodeFormat format,
                               int width,
                               int height,
-                              IDictionary<EncodeHintType, object> hints)
+                              IDictionary hints)
       {
          if (format != BarcodeFormat.EAN_13)
          {
@@ -54,11 +54,11 @@ namespace ZXing.OneD
             throw new ArgumentException(
                 "Requested contents should be 12 (without checksum digit) or 13 digits long, but got " + contents.Length);
          }
-         foreach (var ch in contents)
-         {
-            if (!Char.IsDigit(ch))
-               throw new ArgumentException("Requested contents should only contain digits, but got '" + ch + "'");
-         }
+         //foreach (var ch in contents)
+         //{
+         //   if (!Char.IsDigit(ch))
+         //      throw new ArgumentException("Requested contents should only contain digits, but got '" + ch + "'");
+         //}
          if (contents.Length == 12)
             contents = CalculateChecksumDigitModulo10(contents);
 

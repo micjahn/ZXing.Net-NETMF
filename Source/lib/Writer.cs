@@ -15,7 +15,7 @@
 */
 
 using System;
-using System.Collections.Generic;
+using System.Collections;
 using ZXing.Common;
 
 namespace ZXing
@@ -46,6 +46,6 @@ namespace ZXing
       /// <param name="height">The preferred height in pixels</param>
       /// <param name="hints">Additional parameters to supply to the encoder</param>
       /// <returns> The generated barcode as a Matrix of unsigned bytes (0 == black, 255 == white)</returns>
-      BitMatrix encode(String contents, BarcodeFormat format, int width, int height, IDictionary<EncodeHintType, object> hints);
+      BitMatrix encode(String contents, BarcodeFormat format, int width, int height, IDictionary hints);
    }
 }

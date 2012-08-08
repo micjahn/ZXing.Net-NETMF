@@ -14,7 +14,8 @@
 * limitations under the License.
 */
 
-using System.Collections.Generic;
+
+using System.Collections;
 
 namespace ZXing.Multi
 {
@@ -40,7 +41,7 @@ namespace ZXing.Multi
          return decode(image, null);
       }
 
-      public Result decode(BinaryBitmap image, IDictionary<DecodeHintType, object> hints)
+      public Result decode(BinaryBitmap image, Hashtable hints)
       {
          int width = image.Width;
          int height = image.Height;

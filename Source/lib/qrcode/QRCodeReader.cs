@@ -15,8 +15,7 @@
  */
 
 using System;
-using System.Collections.Generic;
-
+using System.Collections;
 using ZXing.Common;
 using ZXing.QrCode.Internal;
 
@@ -48,11 +47,11 @@ namespace ZXing.QrCode
          return decode(image, null);
       }
 
-      public Result decode(BinaryBitmap image, IDictionary<DecodeHintType, object> hints)
+      public Result decode(BinaryBitmap image, Hashtable hints)
       {
          DecoderResult decoderResult;
          ResultPoint[] points;
-         if (hints != null && hints.ContainsKey(DecodeHintType.PURE_BARCODE))
+         if (hints != null && hints.Contains(DecodeHintType.PURE_BARCODE))
          {
             BitMatrix bits = extractPureBits(image.BlackMatrix);
             if (bits == null)
@@ -72,7 +71,7 @@ namespace ZXing.QrCode
             return null;
 
          Result result = new Result(decoderResult.Text, decoderResult.RawBytes, points, BarcodeFormat.QR_CODE);
-         IList<byte[]> byteSegments = decoderResult.ByteSegments;
+         var byteSegments = decoderResult.ByteSegments;
          if (byteSegments != null)
          {
             result.putMetadata(ResultMetadataType.BYTE_SEGMENTS, byteSegments);

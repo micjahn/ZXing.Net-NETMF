@@ -15,7 +15,8 @@
 */
 
 using System;
-using System.Collections.Generic;
+using System.Collections;
+
 
 namespace ZXing.Multi
 {
@@ -51,9 +52,9 @@ namespace ZXing.Multi
          return decodeMultiple(image, null);
       }
 
-      public Result[] decodeMultiple(BinaryBitmap image, IDictionary<DecodeHintType, object> hints)
+      public Result[] decodeMultiple(BinaryBitmap image, Hashtable hints)
       {
-         var results = new List<Result>();
+         var results = new ArrayList();
          doDecodeMultiple(image, hints, results, 0, 0);
          if ((results.Count == 0))
          {
@@ -68,7 +69,7 @@ namespace ZXing.Multi
          return resultArray;
       }
 
-      private void doDecodeMultiple(BinaryBitmap image, IDictionary<DecodeHintType, object> hints, IList<Result> results, int xOffset, int yOffset)
+      private void doDecodeMultiple(BinaryBitmap image, Hashtable hints, ArrayList results, int xOffset, int yOffset)
       {
          Result result = _delegate.decode(image, hints);
          if (result == null)
@@ -166,7 +167,7 @@ namespace ZXing.Multi
          return _delegate.decode(image);
       }
 
-      public Result decode(BinaryBitmap image, IDictionary<DecodeHintType, object> hints)
+      public Result decode(BinaryBitmap image, Hashtable hints)
       {
          return _delegate.decode(image, hints);
       }

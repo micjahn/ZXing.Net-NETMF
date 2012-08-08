@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-using System.Collections.Generic;
+
+using System.Collections;
 using ZXing.Common;
 
 namespace ZXing.OneD
@@ -30,11 +31,11 @@ namespace ZXing.OneD
    {
       private readonly UPCEANReader[] readers;
 
-      public MultiFormatUPCEANReader(IDictionary<DecodeHintType, object> hints)
+      public MultiFormatUPCEANReader(Hashtable hints)
       {
-         var possibleFormats = hints == null || !hints.ContainsKey(DecodeHintType.POSSIBLE_FORMATS) ? null :
-             (IList<BarcodeFormat>)hints[DecodeHintType.POSSIBLE_FORMATS];
-         var readers = new List<UPCEANReader>();
+         var possibleFormats = hints == null || !hints.Contains(DecodeHintType.POSSIBLE_FORMATS) ? null :
+             (ArrayList)hints[DecodeHintType.POSSIBLE_FORMATS];
+         var readers = new ArrayList();
          if (possibleFormats != null)
          {
             if (possibleFormats.Contains(BarcodeFormat.EAN_13))
@@ -61,12 +62,12 @@ namespace ZXing.OneD
             readers.Add(new EAN8Reader());
             readers.Add(new UPCEReader());
          }
-         this.readers = readers.ToArray();
+         this.readers = (UPCEANReader[])readers.ToArray();
       }
 
       override public Result decodeRow(int rowNumber,
                               BitArray row,
-                              IDictionary<DecodeHintType, object> hints)
+                              Hashtable hints)
       {
          // Compute this location once and reuse it on multiple implementations
          int[] startGuardPattern = UPCEANReader.findStartGuardPattern(row);
@@ -95,7 +96,7 @@ namespace ZXing.OneD
                 result.BarcodeFormat == BarcodeFormat.EAN_13 &&
                     result.Text[0] == '0';
             var possibleFormats =
-                hints == null || !hints.ContainsKey(DecodeHintType.POSSIBLE_FORMATS) ? null : (IList<BarcodeFormat>)hints[DecodeHintType.POSSIBLE_FORMATS];
+                hints == null || !hints.Contains(DecodeHintType.POSSIBLE_FORMATS) ? null : (ArrayList)hints[DecodeHintType.POSSIBLE_FORMATS];
             bool canReturnUPCA = possibleFormats == null || possibleFormats.Contains(BarcodeFormat.UPC_A);
 
             if (ean13MayBeUPCA && canReturnUPCA)

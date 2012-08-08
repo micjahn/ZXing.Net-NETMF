@@ -15,7 +15,7 @@
  */
 
 using System;
-using System.Collections.Generic;
+using System.Collections;
 using System.Text;
 using ZXing.Common;
 
@@ -72,7 +72,7 @@ namespace ZXing.OneD
          counterLength = 0;
       }
 
-      override public Result decodeRow(int rowNumber, BitArray row, IDictionary<DecodeHintType, object> hints)
+      override public Result decodeRow(int rowNumber, BitArray row, Hashtable hints)
       {
          if (!setCounters(row))
             return null;

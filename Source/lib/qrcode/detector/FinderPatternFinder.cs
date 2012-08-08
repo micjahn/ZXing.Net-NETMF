@@ -15,7 +15,8 @@
 */
 
 using System;
-using System.Collections.Generic;
+using System.Collections;
+
 using ZXing.Common;
 
 namespace ZXing.QrCode.Internal
@@ -38,7 +39,7 @@ namespace ZXing.QrCode.Internal
       private const int INTEGER_MATH_SHIFT = 8;
 
       private readonly BitMatrix image;
-      private List<FinderPattern> possibleCenters;
+      private ArrayList possibleCenters;
       private bool hasSkipped;
       private readonly int[] crossCheckStateCount;
       private readonly ResultPointCallback resultPointCallback;
@@ -56,7 +57,7 @@ namespace ZXing.QrCode.Internal
       public FinderPatternFinder(BitMatrix image, ResultPointCallback resultPointCallback)
       {
          this.image = image;
-         this.possibleCenters = new List<FinderPattern>();
+         this.possibleCenters = new ArrayList();
          this.crossCheckStateCount = new int[5];
          this.resultPointCallback = resultPointCallback;
       }
@@ -69,7 +70,7 @@ namespace ZXing.QrCode.Internal
          }
       }
 
-      virtual protected internal List<FinderPattern> PossibleCenters
+      virtual protected internal ArrayList PossibleCenters
       {
          get
          {
@@ -77,9 +78,9 @@ namespace ZXing.QrCode.Internal
          }
       }
 
-      internal virtual FinderPatternInfo find(IDictionary<DecodeHintType, object> hints)
+      internal virtual FinderPatternInfo find(Hashtable hints)
       {
-         bool tryHarder = hints != null && hints.ContainsKey(DecodeHintType.TRY_HARDER);
+         bool tryHarder = hints != null && hints.Contains(DecodeHintType.TRY_HARDER);
          int maxI = image.Height;
          int maxJ = image.Width;
          // We are looking for black/white/black/white/black modules in
@@ -226,12 +227,12 @@ namespace ZXing.QrCode.Internal
       /// <summary> Given a count of black/white/black/white/black pixels just seen and an end position,
       /// figures the location of the center of this run.
       /// </summary>
-      private static float? centerFromEnd(int[] stateCount, int end)
+      private static NullableFloat centerFromEnd(int[] stateCount, int end)
       {
          var result = (end - stateCount[4] - stateCount[3]) - stateCount[2] / 2.0f;
-         if (Single.IsNaN(result))
-            return null;
-         return result;
+         //if (Single.IsNaN(result))
+         //   return null;
+         return new NullableFloat(result);
       }
 
       /// <param name="stateCount">count of black/white/black/white/black pixels just read
@@ -291,7 +292,7 @@ namespace ZXing.QrCode.Internal
       /// <returns>
       /// vertical center of finder pattern, or null if not found
       /// </returns>
-      private float? crossCheckVertical(int startI, int centerJ, int maxCount, int originalStateCountTotal)
+      private NullableFloat crossCheckVertical(int startI, int centerJ, int maxCount, int originalStateCountTotal)
       {
          int maxI = image.Height;
          int[] stateCount = CrossCheckStateCount;
@@ -372,7 +373,7 @@ namespace ZXing.QrCode.Internal
       /// except it reads horizontally instead of vertically. This is used to cross-cross
       /// check a vertical cross check and locate the real center of the alignment pattern.</p>
       /// </summary>
-      private float? crossCheckHorizontal(int startJ, int centerI, int maxCount, int originalStateCountTotal)
+      private NullableFloat crossCheckHorizontal(int startJ, int centerI, int maxCount, int originalStateCountTotal)
       {
          int maxJ = image.Width;
          int[] stateCount = CrossCheckStateCount;
@@ -469,10 +470,10 @@ namespace ZXing.QrCode.Internal
       {
          int stateCountTotal = stateCount[0] + stateCount[1] + stateCount[2] + stateCount[3] +
              stateCount[4];
-         float? centerJ = centerFromEnd(stateCount, j);
+         NullableFloat centerJ = centerFromEnd(stateCount, j);
          if (centerJ == null)
             return false;
-         float? centerI = crossCheckVertical(i, (int)centerJ.Value, stateCount[2], stateCountTotal);
+         NullableFloat centerI = crossCheckVertical(i, (int)centerJ.Value, stateCount[2], stateCountTotal);
          if (centerI != null)
          {
             // Re-cross check
@@ -483,7 +484,7 @@ namespace ZXing.QrCode.Internal
                bool found = false;
                for (int index = 0; index < possibleCenters.Count; index++)
                {
-                  var center = possibleCenters[index];
+                  var center = (FinderPattern)possibleCenters[index];
                   // Look for about the same center and module size:
                   if (center.aboutEquals(estimatedModuleSize, centerI.Value, centerJ.Value))
                   {
@@ -524,7 +525,7 @@ namespace ZXing.QrCode.Internal
             return 0;
          }
          FinderPattern firstConfirmedCenter = null;
-         foreach (var center in possibleCenters)
+         foreach (FinderPattern center in possibleCenters)
          {
             if (center.Count >= CENTER_QUORUM)
             {
@@ -557,7 +558,7 @@ namespace ZXing.QrCode.Internal
          int confirmedCount = 0;
          float totalModuleSize = 0.0f;
          int max = possibleCenters.Count;
-         foreach (var pattern in possibleCenters)
+         foreach (FinderPattern pattern in possibleCenters)
          {
             if (pattern.Count >= CENTER_QUORUM)
             {
@@ -574,10 +575,10 @@ namespace ZXing.QrCode.Internal
          // vary too much. We arbitrarily say that when the total deviation from average exceeds
          // 5% of the total module size estimates, it's too much.
          float average = totalModuleSize / max;
-         float totalDeviation = 0.0f;
+         double totalDeviation = 0.0f;
          for (int i = 0; i < max; i++)
          {
-            var pattern = possibleCenters[i];
+            var pattern = (FinderPattern)possibleCenters[i];
             totalDeviation += Math.Abs(pattern.EstimatedModuleSize - average);
          }
          return totalDeviation <= 0.05f * totalModuleSize;
@@ -602,7 +603,7 @@ namespace ZXing.QrCode.Internal
             // But we can only afford to do so if we have at least 4 possibilities to choose from
             float totalModuleSize = 0.0f;
             float square = 0.0f;
-            foreach (var center in possibleCenters)
+            foreach (FinderPattern center in possibleCenters)
             {
                float size = center.EstimatedModuleSize;
                totalModuleSize += size;
@@ -613,11 +614,11 @@ namespace ZXing.QrCode.Internal
 
             possibleCenters.Sort(new FurthestFromAverageComparator(average));
 
-            float limit = Math.Max(0.2f * average, stdDev);
+            double limit = Math.Max(0.2f * average, stdDev);
 
             for (int i = 0; i < possibleCenters.Count && possibleCenters.Count > 3; i++)
             {
-               FinderPattern pattern = possibleCenters[i];
+               FinderPattern pattern = (FinderPattern)possibleCenters[i];
                if (Math.Abs(pattern.EstimatedModuleSize - average) > limit)
                {
                   possibleCenters.RemoveAt(i);
@@ -631,7 +632,7 @@ namespace ZXing.QrCode.Internal
             // Throw away all but those first size candidate points we found.
 
             float totalModuleSize = 0.0f;
-            foreach (var possibleCenter in possibleCenters)
+            foreach (FinderPattern possibleCenter in possibleCenters)
             {
                totalModuleSize += possibleCenter.EstimatedModuleSize;
             }
@@ -644,18 +645,18 @@ namespace ZXing.QrCode.Internal
             possibleCenters = possibleCenters.GetRange(0, 3);
          }
 
-         return new[]
+         return new FinderPattern[]
                    {
-                      possibleCenters[0],
-                      possibleCenters[1],
-                      possibleCenters[2]
+                      (FinderPattern)possibleCenters[0],
+                      (FinderPattern)possibleCenters[1],
+                      (FinderPattern)possibleCenters[2]
                    };
       }
 
       /// <summary>
       /// Orders by furthest from average
       /// </summary>
-      private sealed class FurthestFromAverageComparator : IComparer<FinderPattern>
+      private sealed class FurthestFromAverageComparator : IComparer
       {
          private readonly float average;
 
@@ -664,16 +665,18 @@ namespace ZXing.QrCode.Internal
             average = f;
          }
 
-         public int Compare(FinderPattern x, FinderPattern y)
+         public int Compare(object x, object y)
          {
-            float dA = Math.Abs(y.EstimatedModuleSize - average);
-            float dB = Math.Abs(x.EstimatedModuleSize - average);
+            var xTmp = (FinderPattern)x;
+            var yTmp = (FinderPattern)y;
+            var dA = Math.Abs(yTmp.EstimatedModuleSize - average);
+            var dB = Math.Abs(xTmp.EstimatedModuleSize - average);
             return dA < dB ? -1 : dA == dB ? 0 : 1;
          }
       }
 
       /// <summary> <p>Orders by {@link FinderPattern#getCount()}, descending.</p></summary>
-      private sealed class CenterComparator : IComparer<FinderPattern>
+      private sealed class CenterComparator : IComparer
       {
          private readonly float average;
 
@@ -682,15 +685,17 @@ namespace ZXing.QrCode.Internal
             average = f;
          }
 
-         public int Compare(FinderPattern x, FinderPattern y)
+         public int Compare(object x, object y)
          {
-            if (y.Count == x.Count)
+            var xTmp = (FinderPattern)x;
+            var yTmp = (FinderPattern)y;
+            if (yTmp.Count == xTmp.Count)
             {
-               float dA = Math.Abs(y.EstimatedModuleSize - average);
-               float dB = Math.Abs(x.EstimatedModuleSize - average);
+               var dA = Math.Abs(yTmp.EstimatedModuleSize - average);
+               var dB = Math.Abs(xTmp.EstimatedModuleSize - average);
                return dA < dB ? 1 : dA == dB ? 0 : -1;
             }
-            return y.Count - x.Count;
+            return yTmp.Count - xTmp.Count;
          }
       }
    }

@@ -15,8 +15,7 @@
 */
 
 using System;
-using System.Collections.Generic;
-
+using System.Collections;
 using ZXing.Common;
 
 namespace ZXing.QrCode.Internal
@@ -40,7 +39,7 @@ namespace ZXing.QrCode.Internal
    sealed class AlignmentPatternFinder
    {
       private readonly BitMatrix image;
-      private readonly IList<AlignmentPattern> possibleCenters;
+      private readonly IList possibleCenters;
       private readonly int startX;
       private readonly int startY;
       private readonly int width;
@@ -67,7 +66,7 @@ namespace ZXing.QrCode.Internal
       internal AlignmentPatternFinder(BitMatrix image, int startX, int startY, int width, int height, float moduleSize, ResultPointCallback resultPointCallback)
       {
          this.image = image;
-         this.possibleCenters = new List<AlignmentPattern>(5);
+         this.possibleCenters = new ArrayList();
          this.startX = startX;
          this.startY = startY;
          this.width = width;
@@ -170,7 +169,7 @@ namespace ZXing.QrCode.Internal
          // any guess at all, return it.
          if (possibleCenters.Count != 0)
          {
-            return possibleCenters[0];
+            return (AlignmentPattern)possibleCenters[0];
          }
 
          return null;
@@ -179,12 +178,12 @@ namespace ZXing.QrCode.Internal
       /// <summary> Given a count of black/white/black pixels just seen and an end position,
       /// figures the location of the center of this black/white/black run.
       /// </summary>
-      private static float? centerFromEnd(int[] stateCount, int end)
+      private static NullableFloat centerFromEnd(int[] stateCount, int end)
       {
          var result = (end - stateCount[2]) - stateCount[1] / 2.0f;
-         if (Single.IsNaN(result))
-            return null;
-         return result;
+         //if (Single.IsNaN(result))
+         //   return null;
+         return new NullableFloat(result);
       }
 
       /// <param name="stateCount">count of black/white/black pixels just read
@@ -218,7 +217,7 @@ namespace ZXing.QrCode.Internal
       /// <returns>
       /// vertical center of alignment pattern, or null if not found
       /// </returns>
-      private float? crossCheckVertical(int startI, int centerJ, int maxCount, int originalStateCountTotal)
+      private NullableFloat crossCheckVertical(int startI, int centerJ, int maxCount, int originalStateCountTotal)
       {
          int maxI = image.Height;
          int[] stateCount = crossCheckStateCount;
@@ -275,7 +274,7 @@ namespace ZXing.QrCode.Internal
             return null;
          }
 
-         return foundPatternCross(stateCount) ? centerFromEnd(stateCount, i) : null;
+         return foundPatternCross(stateCount) ? centerFromEnd(stateCount, i) : (NullableFloat)null;
       }
 
       /// <summary> <p>This is called when a horizontal scan finds a possible alignment pattern. It will
@@ -295,14 +294,14 @@ namespace ZXing.QrCode.Internal
       private AlignmentPattern handlePossibleCenter(int[] stateCount, int i, int j)
       {
          int stateCountTotal = stateCount[0] + stateCount[1] + stateCount[2];
-         float? centerJ = centerFromEnd(stateCount, j);
+         NullableFloat centerJ = centerFromEnd(stateCount, j);
          if (centerJ == null)
             return null;
-         float? centerI = crossCheckVertical(i, (int)centerJ, 2 * stateCount[1], stateCountTotal);
+         NullableFloat centerI = crossCheckVertical(i, (int)centerJ.Value, 2 * stateCount[1], stateCountTotal);
          if (centerI != null)
          {
             float estimatedModuleSize = (stateCount[0] + stateCount[1] + stateCount[2]) / 3.0f;
-            foreach (var center in possibleCenters)
+            foreach (AlignmentPattern center in possibleCenters)
             {
                // Look for about the same center and module size:
                if (center.aboutEquals(estimatedModuleSize, centerI.Value, centerJ.Value))

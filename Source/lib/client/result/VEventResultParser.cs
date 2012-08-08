@@ -15,7 +15,7 @@
 */
 
 using System;
-using System.Collections.Generic;
+using System.Collections;
 using System.Globalization;
 
 namespace ZXing.Client.Result
@@ -74,9 +74,9 @@ namespace ZXing.Client.Result
          else
          {
             int semicolon = geoString.IndexOf(';');
-            if (!Double.TryParse(geoString.Substring(0, semicolon), NumberStyles.Float, CultureInfo.InvariantCulture, out latitude))
+            if (!Double.TryParse(geoString.Substring(0, semicolon), out latitude))
                return null;
-            if (!Double.TryParse(geoString.Substring(semicolon + 1), NumberStyles.Float, CultureInfo.InvariantCulture, out longitude))
+            if (!Double.TryParse(geoString.Substring(semicolon + 1), out longitude))
                return null;
          }
 
@@ -103,12 +103,12 @@ namespace ZXing.Client.Result
                                                           bool trim)
       {
          var values = VCardResultParser.matchSingleVCardPrefixedField(prefix, rawText, trim, false);
-         return values == null || values.Count == 0 ? null : values[0];
+         return values == null || values.Count == 0 ? null : (string)values[0];
       }
 
       private static String[] matchVCardPrefixedField(String prefix, String rawText, bool trim)
       {
-         List<List<String>> values = VCardResultParser.matchVCardPrefixedField(prefix, rawText, trim, false);
+         IList values = VCardResultParser.matchVCardPrefixedField(prefix, rawText, trim, false);
          if (values == null || values.Count == 0)
          {
             return null;
@@ -117,14 +117,15 @@ namespace ZXing.Client.Result
          String[] result = new String[size];
          for (int i = 0; i < size; i++)
          {
-            result[i] = values[i][0];
+            result[i] = (string)((IList)values[i])[0];
          }
          return result;
       }
 
       private static String stripMailto(String s)
       {
-         if (s != null && (s.StartsWith("mailto:") || s.StartsWith("MAILTO:")))
+         if (s != null && s.Length > 6 && 
+             String.Compare(s.Substring(0, 7).ToUpper(), "MAILTO:") == 0)
          {
             s = s.Substring(7);
          }

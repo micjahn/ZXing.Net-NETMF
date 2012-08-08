@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-using System.Collections.Generic;
 
+using System.Collections;
 using ZXing.Common;
 using ZXing.Multi.QrCode.Internal;
 using ZXing.QrCode;
@@ -34,9 +34,9 @@ namespace ZXing.Multi.QrCode
          return decodeMultiple(image, null);
       }
 
-      public Result[] decodeMultiple(BinaryBitmap image, IDictionary<DecodeHintType, object> hints)
+      public Result[] decodeMultiple(BinaryBitmap image, Hashtable hints)
       {
-         var results = new List<Result>();
+         var results = new ArrayList();
          var detectorResults = new MultiDetector(image.BlackMatrix).detectMulti(hints);
          foreach (DetectorResult detectorResult in detectorResults)
          {
@@ -58,7 +58,7 @@ namespace ZXing.Multi.QrCode
             }
             results.Add(result);
          }
-         return results.Count == 0 ? EMPTY_RESULT_ARRAY : results.ToArray();
+         return results.Count == 0 ? EMPTY_RESULT_ARRAY : (Result[])results.ToArray();
       }
    }
 }

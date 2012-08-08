@@ -15,8 +15,7 @@
  */
 
 using System;
-using System.Collections.Generic;
-
+using System.Collections;
 using ZXing.Common;
 using ZXing.Common.Detector;
 
@@ -58,7 +57,7 @@ namespace ZXing.Datamatrix.Internal
          // Point A and D are across the diagonal from one another,
          // as are B and C. Figure out which are the solid black lines
          // by counting transitions
-         List<ResultPointsAndTransitions> transitions = new List<ResultPointsAndTransitions>(4);
+         var transitions = new ArrayList();
          transitions.Add(transitionsBetween(pointA, pointB));
          transitions.Add(transitionsBetween(pointA, pointC));
          transitions.Add(transitionsBetween(pointB, pointD));
@@ -67,12 +66,12 @@ namespace ZXing.Datamatrix.Internal
 
          // Sort by number of transitions. First two will be the two solid sides; last two
          // will be the two alternating black/white sides
-         ResultPointsAndTransitions lSideOne = transitions[0];
-         ResultPointsAndTransitions lSideTwo = transitions[1];
+         var lSideOne = (ResultPointsAndTransitions)transitions[0];
+         var lSideTwo = (ResultPointsAndTransitions)transitions[1];
 
          // Figure out which point is their intersection by tallying up the number of times we see the
          // endpoints in the four endpoints. One will show up twice.
-         IDictionary<ResultPoint, int> pointCount = new Dictionary<ResultPoint, int>();
+         var pointCount = new Hashtable();
          increment(pointCount, lSideOne.From);
          increment(pointCount, lSideOne.To);
          increment(pointCount, lSideTwo.From);
@@ -81,10 +80,10 @@ namespace ZXing.Datamatrix.Internal
          ResultPoint maybeTopLeft = null;
          ResultPoint bottomLeft = null;
          ResultPoint maybeBottomRight = null;
-         foreach (var entry in pointCount)
+         foreach (DictionaryEntry entry in pointCount)
          {
-            ResultPoint point = entry.Key;
-            int value = entry.Value;
+            ResultPoint point = (ResultPoint)entry.Key;
+            int value = (int)entry.Value;
             if (value == 2)
             {
                bottomLeft = point; // this is definitely the bottom left, then -- end of two L sides
@@ -120,15 +119,15 @@ namespace ZXing.Datamatrix.Internal
 
          // Which point didn't we find in relation to the "L" sides? that's the top right corner
          ResultPoint topRight;
-         if (!pointCount.ContainsKey(pointA))
+         if (!pointCount.Contains(pointA))
          {
             topRight = pointA;
          }
-         else if (!pointCount.ContainsKey(pointB))
+         else if (!pointCount.Contains(pointB))
          {
             topRight = pointB;
          }
-         else if (!pointCount.ContainsKey(pointC))
+         else if (!pointCount.Contains(pointC))
          {
             topRight = pointC;
          }
@@ -344,11 +343,11 @@ namespace ZXing.Datamatrix.Internal
       /// <summary>
       /// Increments the Integer associated with a key by one.
       /// </summary>
-      private static void increment(IDictionary<ResultPoint, int> table, ResultPoint key)
+      private static void increment(IDictionary table, ResultPoint key)
       {
-         if (table.ContainsKey(key))
+         if (table.Contains(key))
          {
-            int value = table[key];
+            int value = (int)table[key];
             table[key] = value + 1;
          }
          else
@@ -464,11 +463,13 @@ namespace ZXing.Datamatrix.Internal
       /// <summary>
       /// Orders ResultPointsAndTransitions by number of transitions, ascending.
       /// </summary>
-      private sealed class ResultPointsAndTransitionsComparator : IComparer<ResultPointsAndTransitions>
+      private sealed class ResultPointsAndTransitionsComparator : IComparer
       {
-         public int Compare(ResultPointsAndTransitions o1, ResultPointsAndTransitions o2)
+         public int Compare(object o1, object o2)
          {
-            return o1.Transitions - o2.Transitions;
+            var o1Tmp = (ResultPointsAndTransitions)o1;
+            var o2Tmp = (ResultPointsAndTransitions)o2;
+            return o1Tmp.Transitions - o2Tmp.Transitions;
          }
       }
    }

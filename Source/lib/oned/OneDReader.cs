@@ -15,7 +15,8 @@
  */
 
 using System;
-using System.Collections.Generic;
+using System.Collections;
+
 using ZXing.Common;
 
 namespace ZXing.OneD
@@ -38,13 +39,12 @@ namespace ZXing.OneD
       }
 
       // Note that we don't try rotation without the try harder flag, even if rotation was supported.
-      virtual public Result decode(BinaryBitmap image,
-                           IDictionary<DecodeHintType, object> hints)
+      virtual public Result decode(BinaryBitmap image, Hashtable hints)
       {
          var result = doDecode(image, hints);
          if (result == null)
          {
-            bool tryHarder = hints != null && hints.ContainsKey(DecodeHintType.TRY_HARDER);
+            bool tryHarder = hints != null && hints.Contains(DecodeHintType.TRY_HARDER);
             if (tryHarder && image.RotateSupported)
             {
                BinaryBitmap rotatedImage = image.rotateCounterClockwise();
@@ -52,9 +52,9 @@ namespace ZXing.OneD
                if (result == null)
                   return null;
                // Record that we found it rotated 90 degrees CCW / 270 degrees CW
-               IDictionary<ResultMetadataType, object> metadata = result.ResultMetadata;
+               var metadata = result.ResultMetadata;
                int orientation = 270;
-               if (metadata != null && metadata.ContainsKey(ResultMetadataType.ORIENTATION))
+               if (metadata != null && metadata.Contains(ResultMetadataType.ORIENTATION))
                {
                   // But if we found it reversed in doDecode(), add in that result here:
                   orientation = (orientation +
@@ -95,15 +95,14 @@ namespace ZXing.OneD
       /// <returns>The contents of the decoded barcode</returns>
       /// <exception cref="NotFoundException">Any spontaneous errors which occur</exception>
       /// </summary>
-      private Result doDecode(BinaryBitmap image,
-                              IDictionary<DecodeHintType, object> hints)
+      private Result doDecode(BinaryBitmap image, Hashtable hints)
       {
          int width = image.Width;
          int height = image.Height;
          BitArray row = new BitArray(width);
 
          int middle = height >> 1;
-         bool tryHarder = hints != null && hints.ContainsKey(DecodeHintType.TRY_HARDER);
+         bool tryHarder = hints != null && hints.Contains(DecodeHintType.TRY_HARDER);
          int rowStep = Math.Max(1, height >> (tryHarder ? 8 : 5));
          int maxLines;
          if (tryHarder)
@@ -152,12 +151,12 @@ namespace ZXing.OneD
                   // since we want to avoid drawing the wrong points after flipping the row, and,
                   // don't want to clutter with noise from every single row scan -- just the scans
                   // that start on the center line.
-                  if (hints != null && hints.ContainsKey(DecodeHintType.NEED_RESULT_POINT_CALLBACK))
+                  if (hints != null && hints.Contains(DecodeHintType.NEED_RESULT_POINT_CALLBACK))
                   {
-                     IDictionary<DecodeHintType, Object> newHints = new Dictionary<DecodeHintType, Object>();
-                     foreach (var hint in hints)
+                     var newHints = new Hashtable();
+                     foreach (DictionaryEntry hint in hints)
                      {
-                        if (hint.Key != DecodeHintType.NEED_RESULT_POINT_CALLBACK)
+                        if (((DecodeHintType)(hint.Key)) != DecodeHintType.NEED_RESULT_POINT_CALLBACK)
                            newHints.Add(hint.Key, hint.Value);
                      }
                      hints = newHints;
@@ -326,6 +325,6 @@ namespace ZXing.OneD
       /// <returns><see cref="Result" />containing encoded string and start/end of barcode</returns>
       /// <exception cref="NotFoundException">if an error occurs or barcode cannot be found</exception>
       /// </summary>
-      public abstract Result decodeRow(int rowNumber, BitArray row, IDictionary<DecodeHintType, object> hints);
+      public abstract Result decodeRow(int rowNumber, BitArray row, Hashtable hints);
    }
 }

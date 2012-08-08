@@ -14,8 +14,8 @@
 * limitations under the License.
 */
 
-using System.Collections.Generic;
 
+using System.Collections;
 using ZXing.Common;
 using ZXing.Common.ReedSolomon;
 
@@ -46,7 +46,7 @@ namespace ZXing.QrCode.Internal
       /// </param>
       /// <returns> text and bytes encoded within the QR Code
       /// </returns>
-      public DecoderResult decode(bool[][] image, IDictionary<DecodeHintType, object> hints)
+      public DecoderResult decode(bool[][] image, Hashtable hints)
       {
          int dimension = image.Length;
          BitMatrix bits = new BitMatrix(dimension);
@@ -67,7 +67,7 @@ namespace ZXing.QrCode.Internal
       /// </param>
       /// <returns> text and bytes encoded within the QR Code
       /// </returns>
-      public DecoderResult decode(BitMatrix bits, IDictionary<DecodeHintType, object> hints)
+      public DecoderResult decode(BitMatrix bits, Hashtable hints)
       {
          // Construct a parser and read version, error-correction level
          BitMatrixParser parser = BitMatrixParser.createBitMatrixParser(bits);

@@ -54,27 +54,27 @@ namespace ZXing.Client.Result
          }
 
          String query = matcher.Groups[4].Value;
-         if (String.IsNullOrEmpty(query))
+         if (query != null && query.Length == 0)
             query = null;
 
          double latitude;
          double longitude;
          double altitude = 0.0;
-         if (!Double.TryParse(matcher.Groups[1].Value, NumberStyles.Float, CultureInfo.InvariantCulture, out latitude))
+         if (!Double.TryParse(matcher.Groups[1].Value, out latitude))
             return null;
          if (latitude > 90.0 || latitude < -90.0)
          {
             return null;
          }
-         if (!Double.TryParse(matcher.Groups[2].Value, NumberStyles.Float, CultureInfo.InvariantCulture, out longitude))
+         if (!Double.TryParse(matcher.Groups[2].Value, out longitude))
             return null;
          if (longitude > 180.0 || longitude < -180.0)
          {
             return null;
          }
-         if (!String.IsNullOrEmpty(matcher.Groups[3].Value))
+         if (matcher.Groups[3].Value != null && matcher.Groups[3].Value.Length > 0)
          {
-            if (!Double.TryParse(matcher.Groups[3].Value, NumberStyles.Float, CultureInfo.InvariantCulture, out altitude))
+            if (!Double.TryParse(matcher.Groups[3].Value, out altitude))
                return null;
             if (altitude < 0.0)
             {

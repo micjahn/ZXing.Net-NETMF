@@ -25,7 +25,8 @@
  */
 
 using System;
-using System.Collections.Generic;
+using System.Collections;
+
 
 namespace ZXing.Client.Result
 {
@@ -53,7 +54,7 @@ namespace ZXing.Client.Result
       private String priceIncrement;
       private String priceCurrency;
       // For AIS that not exist in this object
-      private IDictionary<String, String> uncommonAIs;
+      private IDictionary uncommonAIs;
 
       public ExpandedProductParsedResult(String productID,
                                          String sscc,
@@ -68,7 +69,7 @@ namespace ZXing.Client.Result
                                          String price,
                                          String priceIncrement,
                                          String priceCurrency,
-                                         IDictionary<String, String> uncommonAIs)
+                                         IDictionary uncommonAIs)
          : base(ParsedResultType.PRODUCT)
       {
          this.productID = productID;
@@ -116,15 +117,15 @@ namespace ZXing.Client.Result
          return o1 == null ? o2 == null : o1.Equals(o2);
       }
 
-      private static bool equalsOrNull(IDictionary<String, String> o1, IDictionary<String, String> o2)
+      private static bool equalsOrNull(IDictionary o1, IDictionary o2)
       {
          if (o1 == null)
             return o2 == null;
          if (o1.Count != o2.Count)
             return false;
-         foreach (var entry in o1)
+         foreach (DictionaryEntry entry in o1)
          {
-            if (!o2.ContainsKey(entry.Key))
+            if (!o2.Contains(entry.Key))
                return false;
             if (!entry.Value.Equals(o2[entry.Key]))
                return false;
@@ -221,7 +222,7 @@ namespace ZXing.Client.Result
          get { return priceCurrency; }
       }
 
-      public IDictionary<String, String> UncommonAIs
+      public IDictionary UncommonAIs
       {
          get { return uncommonAIs; }
       }

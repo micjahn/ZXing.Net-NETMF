@@ -15,7 +15,7 @@
  */
 
 using System;
-using System.Collections.Generic;
+using System.Collections;
 using System.Text;
 
 namespace ZXing.Common
@@ -30,7 +30,7 @@ namespace ZXing.Common
 #if (WINDOWS_PHONE70 || WINDOWS_PHONE71 || SILVERLIGHT4 || SILVERLIGHT5)
       private static String PLATFORM_DEFAULT_ENCODING = "UTF-8";
 #else
-      private static String PLATFORM_DEFAULT_ENCODING = Encoding.Default.WebName;
+      private static String PLATFORM_DEFAULT_ENCODING = "UTF-8";
 #endif
       public static String SHIFT_JIS = "SJIS";
       public static String GB2312 = "GB2312";
@@ -38,8 +38,8 @@ namespace ZXing.Common
       private const String UTF8 = "UTF-8";
       private const String ISO88591 = "ISO-8859-1";
       private static readonly bool ASSUME_SHIFT_JIS =
-         String.Compare(SHIFT_JIS, PLATFORM_DEFAULT_ENCODING, StringComparison.OrdinalIgnoreCase) == 0 ||
-         String.Compare(EUC_JP, PLATFORM_DEFAULT_ENCODING, StringComparison.OrdinalIgnoreCase) == 0;
+         String.Compare(SHIFT_JIS, PLATFORM_DEFAULT_ENCODING) == 0 ||
+         String.Compare(EUC_JP, PLATFORM_DEFAULT_ENCODING) == 0;
 
       /// <summary>
       /// Guesses the encoding.
@@ -49,9 +49,9 @@ namespace ZXing.Common
       /// <returns>name of guessed encoding; at the moment will only guess one of:
       /// {@link #SHIFT_JIS}, {@link #UTF8}, {@link #ISO88591}, or the platform
       /// default encoding if none of these can possibly be correct</returns>
-      public static String guessEncoding(byte[] bytes, IDictionary<DecodeHintType, object> hints)
+      public static String guessEncoding(byte[] bytes, Hashtable hints)
       {
-         if (hints != null && hints.ContainsKey(DecodeHintType.CHARACTER_SET))
+         if (hints != null && hints.Contains(DecodeHintType.CHARACTER_SET))
          {
             String characterSet = (String)hints[DecodeHintType.CHARACTER_SET];
             if (characterSet != null)

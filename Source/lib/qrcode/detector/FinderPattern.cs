@@ -75,7 +75,7 @@ namespace ZXing.QrCode.Internal
       {
          if (Math.Abs(i - Y) <= moduleSize && Math.Abs(j - X) <= moduleSize)
          {
-            float moduleSizeDiff = Math.Abs(moduleSize - estimatedModuleSize);
+            var moduleSizeDiff = Math.Abs(moduleSize - estimatedModuleSize);
             return moduleSizeDiff <= 1.0f || moduleSizeDiff <= estimatedModuleSize;
 
          }

@@ -50,7 +50,8 @@ namespace ZXing.Client.Result
          String rawText = result.Text;
          // We specifically handle the odd "URL" scheme here for simplicity and add "URI" for fun
          // Assume anything starting this way really means to be a URI
-         if (rawText.StartsWith("URL:") || rawText.StartsWith("URI:"))
+         if (rawText.Length > 3 && (String.Compare(rawText.Substring(0, 4).ToUpper(), "URL:") == 0 ||
+            String.Compare(rawText.Substring(0, 4).ToUpper(), "URI:") == 0))
          {
             return new URIParsedResult(rawText.Substring(4).Trim(), null);
          }

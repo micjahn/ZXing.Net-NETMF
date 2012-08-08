@@ -79,13 +79,17 @@ namespace ZXing.Maxicode.Internal
                String country = getCountry(bytes).ToString(THREE_DIGITS);
                String service = getServiceClass(bytes).ToString(THREE_DIGITS);
                result.Append(getMessage(bytes, 10, 84));
-               if (result.ToString().StartsWith("[)>" + RS + "01" + GS))
+               var comp = "[)>" + RS + "01" + GS;
+               if (result.Length >= comp.Length &&
+                   String.Compare(result.ToString().Substring(0, comp.Length), comp) == 0)
                {
-                  result.Insert(9, postcode + GS + country + GS + service + GS);
+                  var val = postcode + GS + country + GS + service + GS;
+                  result.Insert(9, val, val.Length);
                }
                else
                {
-                  result.Insert(0, postcode + GS + country + GS + service + GS);
+                  var val = postcode + GS + country + GS + service + GS;
+                  result.Insert(0, val, val.Length);
                }
                break;
             case 4:

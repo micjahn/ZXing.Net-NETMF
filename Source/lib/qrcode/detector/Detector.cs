@@ -15,8 +15,7 @@
 */
 
 using System;
-using System.Collections.Generic;
-
+using System.Collections;
 using ZXing.Common;
 using ZXing.Common.Detector;
 
@@ -73,9 +72,9 @@ namespace ZXing.QrCode.Internal
       /// </param>
       /// <returns> {@link DetectorResult} encapsulating results of detecting a QR Code
       /// </returns>
-      public virtual DetectorResult detect(IDictionary<DecodeHintType, object> hints)
+      public virtual DetectorResult detect(Hashtable hints)
       {
-         resultPointCallback = hints == null || !hints.ContainsKey(DecodeHintType.NEED_RESULT_POINT_CALLBACK) ? null : (ResultPointCallback)hints[DecodeHintType.NEED_RESULT_POINT_CALLBACK];
+         resultPointCallback = hints == null || !hints.Contains(DecodeHintType.NEED_RESULT_POINT_CALLBACK) ? null : (ResultPointCallback)hints[DecodeHintType.NEED_RESULT_POINT_CALLBACK];
 
          FinderPatternFinder finder = new FinderPatternFinder(image, resultPointCallback);
          FinderPatternInfo info = finder.find(hints);
@@ -238,30 +237,31 @@ namespace ZXing.QrCode.Internal
       private float calculateModuleSizeOneWay(ResultPoint pattern, ResultPoint otherPattern)
       {
          //UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-         float moduleSizeEst1 = sizeOfBlackWhiteBlackRunBothWays((int)pattern.X, (int)pattern.Y, (int)otherPattern.X, (int)otherPattern.Y);
+         var moduleSizeEst1 = sizeOfBlackWhiteBlackRunBothWays((int)pattern.X, (int)pattern.Y, (int)otherPattern.X, (int)otherPattern.Y);
          //UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
-         float moduleSizeEst2 = sizeOfBlackWhiteBlackRunBothWays((int)otherPattern.X, (int)otherPattern.Y, (int)pattern.X, (int)pattern.Y);
-         if (Single.IsNaN(moduleSizeEst1))
+         var moduleSizeEst2 = sizeOfBlackWhiteBlackRunBothWays((int)otherPattern.X, (int)otherPattern.Y, (int)pattern.X, (int)pattern.Y);
+         if (!moduleSizeEst1.HasValue)
          {
-            return moduleSizeEst2 / 7.0f;
+            return moduleSizeEst2.Value / 7.0f;
          }
-         if (Single.IsNaN(moduleSizeEst2))
+         if (!moduleSizeEst2.HasValue)
          {
-            return moduleSizeEst1 / 7.0f;
+            return moduleSizeEst1.Value / 7.0f;
          }
          // Average them, and divide by 7 since we've counted the width of 3 black modules,
          // and 1 white and 1 black module on either side. Ergo, divide sum by 14.
-         return (moduleSizeEst1 + moduleSizeEst2) / 14.0f;
+         return (moduleSizeEst1.Value + moduleSizeEst2.Value) / 14.0f;
       }
 
       /// <summary> See {@link #sizeOfBlackWhiteBlackRun(int, int, int, int)}; computes the total width of
       /// a finder pattern by looking for a black-white-black run from the center in the direction
       /// of another point (another finder pattern center), and in the opposite direction too.</p>
       /// </summary>
-      private float sizeOfBlackWhiteBlackRunBothWays(int fromX, int fromY, int toX, int toY)
+      private NullableFloat sizeOfBlackWhiteBlackRunBothWays(int fromX, int fromY, int toX, int toY)
       {
-
-         float result = sizeOfBlackWhiteBlackRun(fromX, fromY, toX, toY);
+         var result = sizeOfBlackWhiteBlackRun(fromX, fromY, toX, toY);
+         if (!result.HasValue)
+            return result;
 
          // Now count other way -- don't run off image though of course
          float scale = 1.0f;
@@ -297,8 +297,11 @@ namespace ZXing.QrCode.Internal
          //UPGRADE_WARNING: Data types in Visual C# might be different.  Verify the accuracy of narrowing conversions. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1042'"
          otherToX = (int)(fromX + (otherToX - fromX) * scale);
 
-         result += sizeOfBlackWhiteBlackRun(fromX, fromY, otherToX, otherToY);
-         return result - 1.0f; // -1 because we counted the middle pixel twice
+         var result2 = sizeOfBlackWhiteBlackRun(fromX, fromY, otherToX, otherToY);
+         if (result2.HasValue)
+            return result2;
+         result.Value += result2.Value;
+         return new NullableFloat(result.Value - 1.0f); // -1 because we counted the middle pixel twice
       }
 
       /// <summary> <p>This method traces a line from a point in the image, in the direction towards another point.
@@ -308,7 +311,7 @@ namespace ZXing.QrCode.Internal
       /// <p>This is used when figuring out how wide a finder pattern is, when the finder pattern
       /// may be skewed or rotated.</p>
       /// </summary>
-      private float sizeOfBlackWhiteBlackRun(int fromX, int fromY, int toX, int toY)
+      private NullableFloat sizeOfBlackWhiteBlackRun(int fromX, int fromY, int toX, int toY)
       {
          // Mild variant of Bresenham's algorithm;
          // see http://en.wikipedia.org/wiki/Bresenham's_line_algorithm
@@ -345,7 +348,7 @@ namespace ZXing.QrCode.Internal
             {
                if (state == 2)
                {
-                  return MathUtils.distance(x, y, fromX, fromY);
+                  return new NullableFloat(MathUtils.distance(x, y, fromX, fromY));
                }
                state++;
             }
@@ -367,10 +370,10 @@ namespace ZXing.QrCode.Internal
          // small approximation; (toX+xStep,toY+yStep) might be really correct. Ignore this.
          if (state == 2)
          {
-            return MathUtils.distance(toX + xstep, toY, fromX, fromY);
+            return new NullableFloat(MathUtils.distance(toX + xstep, toY, fromX, fromY));
          }
          // else we didn't find even black-white-black; no estimate is really possible
-         return Single.NaN;
+         return new NullableFloat();
 
       }
 

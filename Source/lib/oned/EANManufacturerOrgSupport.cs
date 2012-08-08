@@ -15,7 +15,8 @@
  */
 
 using System;
-using System.Collections.Generic;
+using System.Collections;
+
 
 namespace ZXing.OneD
 {
@@ -30,8 +31,8 @@ namespace ZXing.OneD
    /// </summary>
    internal sealed class EANManufacturerOrgSupport
    {
-      private List<int[]> ranges = new List<int[]>();
-      private List<String> countryIdentifiers = new List<String>();
+      private ArrayList ranges = new ArrayList();
+      private ArrayList countryIdentifiers = new ArrayList();
 
       internal String lookupCountryIdentifier(String productCode)
       {
@@ -40,7 +41,7 @@ namespace ZXing.OneD
          int max = ranges.Count;
          for (int i = 0; i < max; i++)
          {
-            int[] range = ranges[i];
+            int[] range = (int[])ranges[i];
             int start = range[0];
             if (prefix < start)
             {
@@ -49,7 +50,7 @@ namespace ZXing.OneD
             int end = range.Length == 1 ? start : range[1];
             if (prefix <= end)
             {
-               return countryIdentifiers[i];
+               return (string)countryIdentifiers[i];
             }
          }
          return null;

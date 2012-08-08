@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-using System.Collections.Generic;
 
+using System.Collections;
 using ZXing.Common;
 using ZXing.PDF417.Internal;
 
@@ -45,11 +45,11 @@ namespace ZXing.PDF417
       }
 
       public Result decode(BinaryBitmap image,
-                           IDictionary<DecodeHintType, object> hints)
+                           Hashtable hints)
       {
          DecoderResult decoderResult;
          ResultPoint[] points;
-         if (hints != null && hints.ContainsKey(DecodeHintType.PURE_BARCODE))
+         if (hints != null && hints.Contains(DecodeHintType.PURE_BARCODE))
          {
             BitMatrix bits = extractPureBits(image.BlackMatrix);
             if (bits == null)

@@ -15,7 +15,7 @@
  */
 
 using System;
-using System.Collections.Generic;
+using System.Collections;
 using System.Text;
 
 using ZXing.Common;
@@ -124,7 +124,7 @@ namespace ZXing.OneD
          return startRange;
       }
 
-      override public Result decodeRow(int rowNumber, BitArray row, IDictionary<DecodeHintType, object> hints)
+      override public Result decodeRow(int rowNumber, BitArray row, Hashtable hints)
       {
          return decodeRow(rowNumber, row, findStartGuardPattern(row), hints);
       }
@@ -137,10 +137,10 @@ namespace ZXing.OneD
       virtual public Result decodeRow(int rowNumber,
                               BitArray row,
                               int[] startGuardRange,
-                              IDictionary<DecodeHintType, object> hints)
+                              Hashtable hints)
       {
 
-         ResultPointCallback resultPointCallback = hints == null || !hints.ContainsKey(DecodeHintType.NEED_RESULT_POINT_CALLBACK) ? null :
+         ResultPointCallback resultPointCallback = hints == null || !hints.Contains(DecodeHintType.NEED_RESULT_POINT_CALLBACK) ? null :
              (ResultPointCallback)hints[DecodeHintType.NEED_RESULT_POINT_CALLBACK];
 
          if (resultPointCallback != null)

@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-using System.Collections.Generic;
+
+using System.Collections;
 using ZXing.Common;
 using ZXing.QrCode.Internal;
 
@@ -36,11 +37,11 @@ namespace ZXing.Multi.QrCode.Internal
       {
       }
 
-      public DetectorResult[] detectMulti(IDictionary<DecodeHintType, object> hints)
+      public DetectorResult[] detectMulti(Hashtable hints)
       {
          BitMatrix image = Image;
          ResultPointCallback resultPointCallback =
-             hints == null || !hints.ContainsKey(DecodeHintType.NEED_RESULT_POINT_CALLBACK) ? null : (ResultPointCallback)hints[DecodeHintType.NEED_RESULT_POINT_CALLBACK];
+             hints == null || !hints.Contains(DecodeHintType.NEED_RESULT_POINT_CALLBACK) ? null : (ResultPointCallback)hints[DecodeHintType.NEED_RESULT_POINT_CALLBACK];
          MultiFinderPatternFinder finder = new MultiFinderPatternFinder(image, resultPointCallback);
          FinderPatternInfo[] infos = finder.findMulti(hints);
 
@@ -49,7 +50,7 @@ namespace ZXing.Multi.QrCode.Internal
             throw NotFoundException.Instance;
          }
 
-         List<DetectorResult> result = new List<DetectorResult>();
+         var result = new ArrayList();
          foreach (FinderPatternInfo info in infos)
          {
             var oneResult = processFinderPatternInfo(info);
@@ -62,9 +63,8 @@ namespace ZXing.Multi.QrCode.Internal
          }
          else
          {
-            return result.ToArray();
+            return (DetectorResult[])result.ToArray();
          }
       }
-
    }
 }

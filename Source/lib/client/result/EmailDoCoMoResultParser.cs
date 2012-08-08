@@ -41,7 +41,8 @@ namespace ZXing.Client.Result
       override public ParsedResult parse(ZXing.Result result)
       {
          String rawText = result.Text;
-         if (!rawText.StartsWith("MATMSG:"))
+         if (rawText.Length < 7 ||
+             String.Compare(rawText.Substring(0, 7).ToUpper(), "MATMSG:") != 0)
          {
             return null;
          }

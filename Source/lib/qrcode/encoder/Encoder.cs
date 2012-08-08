@@ -15,7 +15,7 @@
 */
 
 using System;
-using System.Collections.Generic;
+using System.Collections;
 using System.Text;
 using ZXing.Common;
 using ZXing.Common.ReedSolomon;
@@ -73,10 +73,10 @@ namespace ZXing.QrCode.Internal
 
       public static QRCode encode(String content,
                                 ErrorCorrectionLevel ecLevel,
-                                IDictionary<EncodeHintType, object> hints)
+                                IDictionary hints)
       {
          // Determine what character encoding has been specified by the caller, if any
-         String encoding = hints == null || !hints.ContainsKey(EncodeHintType.CHARACTER_SET) ? null : (String)hints[EncodeHintType.CHARACTER_SET];
+         String encoding = hints == null || !hints.Contains(EncodeHintType.CHARACTER_SET) ? null : (String)hints[EncodeHintType.CHARACTER_SET];
          if (encoding == null)
          {
             encoding = DEFAULT_BYTE_MODE_ENCODING;
@@ -222,7 +222,7 @@ namespace ZXing.QrCode.Internal
          byte[] bytes;
          try
          {
-            bytes = Encoding.GetEncoding("Shift_JIS").GetBytes(content);
+            bytes = Encoding.UTF8.GetBytes(content);
          }
          catch (Exception )
          {
@@ -429,7 +429,7 @@ namespace ZXing.QrCode.Internal
          int maxNumEcBytes = 0;
 
          // Since, we know the number of reedsolmon blocks, we can initialize the vector with the number.
-         var blocks = new List<BlockPair>(numRSBlocks);
+         var blocks = new ArrayList();
 
          for (int i = 0; i < numRSBlocks; ++i)
          {
@@ -635,7 +635,7 @@ namespace ZXing.QrCode.Internal
          byte[] bytes;
          try
          {
-            bytes = Encoding.GetEncoding(encoding).GetBytes(content);
+            bytes = Encoding.UTF8.GetBytes(content);
          }
          catch (Exception uee)
          {
@@ -652,7 +652,7 @@ namespace ZXing.QrCode.Internal
          byte[] bytes;
          try
          {
-            bytes = Encoding.GetEncoding("Shift_JIS").GetBytes(content);
+            bytes = Encoding.UTF8.GetBytes(content);
          }
          catch (Exception uee)
          {

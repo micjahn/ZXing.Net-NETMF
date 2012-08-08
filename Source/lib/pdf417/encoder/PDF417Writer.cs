@@ -15,8 +15,7 @@
  */
 
 using System;
-using System.Collections.Generic;
-
+using System.Collections;
 using ZXing.Common;
 
 namespace ZXing.PDF417.Internal
@@ -31,7 +30,7 @@ namespace ZXing.PDF417.Internal
                               BarcodeFormat format,
                               int width,
                               int height,
-                              IDictionary<EncodeHintType, object> hints)
+                              IDictionary hints)
       {
          if (format != BarcodeFormat.PDF_417)
          {
@@ -42,15 +41,15 @@ namespace ZXing.PDF417.Internal
 
          if (hints != null)
          {
-            if (hints.ContainsKey(EncodeHintType.PDF417_COMPACT))
+            if (hints.Contains(EncodeHintType.PDF417_COMPACT))
             {
                encoder.setCompact((Boolean)hints[EncodeHintType.PDF417_COMPACT]);
             }
-            if (hints.ContainsKey(EncodeHintType.PDF417_COMPACTION))
+            if (hints.Contains(EncodeHintType.PDF417_COMPACTION))
             {
                encoder.setCompaction((Compaction)hints[EncodeHintType.PDF417_COMPACTION]);
             }
-            if (hints.ContainsKey(EncodeHintType.PDF417_DIMENSIONS))
+            if (hints.Contains(EncodeHintType.PDF417_DIMENSIONS))
             {
                Dimensions dimensions = (Dimensions)hints[EncodeHintType.PDF417_DIMENSIONS];
                encoder.setDimensions(dimensions.MaxCols,
@@ -88,7 +87,7 @@ namespace ZXing.PDF417.Internal
                                int maxRows,
                                Compaction compaction)
       {
-         IDictionary<EncodeHintType, Object> hints = new Dictionary<EncodeHintType, Object>();
+         IDictionary hints = new Hashtable();
          hints[EncodeHintType.PDF417_COMPACT] = compact;
          hints[EncodeHintType.PDF417_COMPACTION] = compaction;
          hints[EncodeHintType.PDF417_DIMENSIONS] = new Dimensions(minCols, maxCols, minRows, maxRows);

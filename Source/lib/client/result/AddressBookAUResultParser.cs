@@ -15,7 +15,8 @@
 */
 
 using System;
-using System.Collections.Generic;
+using System.Collections;
+
 
 namespace ZXing.Client.Result
 {
@@ -68,7 +69,7 @@ namespace ZXing.Client.Result
 
       private static String[] matchMultipleValuePrefix(String prefix, int max, String rawText, bool trim)
       {
-         IList<string> values = null;
+         IList values = null;
          for (int i = 1; i <= max; i++)
          {
             var value = matchSinglePrefixedField(prefix + i + ':', rawText, '\r', trim);
@@ -78,7 +79,7 @@ namespace ZXing.Client.Result
             }
             if (values == null)
             {
-               values = new List<string>();
+               values = new ArrayList();
             }
             values.Add(value);
          }

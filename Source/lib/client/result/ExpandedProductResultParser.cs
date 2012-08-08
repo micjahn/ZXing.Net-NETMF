@@ -25,7 +25,7 @@
  */
 
 using System;
-using System.Collections.Generic;
+using System.Collections;
 using System.Text;
 
 namespace ZXing.Client.Result
@@ -66,7 +66,7 @@ namespace ZXing.Client.Result
          String price = null;
          String priceIncrement = null;
          String priceCurrency = null;
-         var uncommonAIs = new Dictionary<String, String>();
+         var uncommonAIs = new Hashtable();
 
          int i = 0;
 

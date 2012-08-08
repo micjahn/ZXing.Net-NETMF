@@ -15,8 +15,7 @@
  */
 
 using System;
-using System.Collections.Generic;
-
+using System.Collections;
 using ZXing.Common;
 using ZXing.QrCode.Internal;
 
@@ -40,7 +39,7 @@ namespace ZXing.QrCode
                               BarcodeFormat format,
                               int width,
                               int height,
-                              IDictionary<EncodeHintType, object> hints)
+                              IDictionary hints)
       {
          if (contents.Length == 0)
          {
@@ -66,10 +65,10 @@ namespace ZXing.QrCode
             {
                errorCorrectionLevel = requestedECLevel;
             }
-            var quietZoneInt = hints.ContainsKey(EncodeHintType.MARGIN) ? (int)hints[EncodeHintType.MARGIN] : (int?)null;
-            if (quietZoneInt != null)
+            var quietZoneInt = hints.Contains(EncodeHintType.MARGIN) ? (int)hints[EncodeHintType.MARGIN] : -1;
+            if (quietZoneInt > 0)
             {
-               quietZone = quietZoneInt.Value;
+               quietZone = quietZoneInt;
             }
          }
 

@@ -15,10 +15,9 @@
 */
 
 using System;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.Runtime.InteropServices;
 
+using Microsoft.SPOT;
+using Microsoft.SPOT.Presentation.Media;
 using ZXing.OneD;
 
 namespace ZXing.Common
@@ -36,11 +35,9 @@ namespace ZXing.Common
       /// <returns>A black and white bitmap converted from this ByteMatrix.</returns>
       public Bitmap ToBitmap(BarcodeFormat format, String content)
       {
-         const byte BLACK = 0;
-         const byte WHITE = 255;
          int width = Width;
          int height = Height;
-         bool outputContent = !String.IsNullOrEmpty(content) && (format == BarcodeFormat.CODE_39 ||
+         bool outputContent = !(content == null || content.Length == 0) && (format == BarcodeFormat.CODE_39 ||
                                                                  format == BarcodeFormat.CODE_128 ||
                                                                  format == BarcodeFormat.EAN_13 ||
                                                                  format == BarcodeFormat.EAN_8 ||
@@ -51,61 +48,33 @@ namespace ZXing.Common
 
          // create the bitmap and lock the bits because we need the stride
          // which is the width of the image and possible padding bytes
-         var bmp = new Bitmap(width, height, PixelFormat.Format24bppRgb);
-         var bmpData = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.WriteOnly, bmp.PixelFormat);
-         try
+         var bmp = new Bitmap(width, height);
+         for (int y = 0; y < height - emptyArea; y++)
          {
-            var pixels = new byte[bmpData.Stride*height];
-            var padding = bmpData.Stride - (3 * width);
-            var index = 0;
-
-            for (int y = 0; y < height - emptyArea; y++)
+            for (var x = 0; x < width; x++)
             {
-               for (var x = 0; x < width; x++)
-               {
-                  var color = this[x, y] ? BLACK : WHITE;
-                  pixels[index++] = color;
-                  pixels[index++] = color;
-                  pixels[index++] = color;
-               }
-               index += padding;
+               var color = this[x, y] ? Color.Black : Color.White;
+               bmp.SetPixel(x, y, color);
             }
-            for (int y = (height - emptyArea) * bmpData.Stride; y < pixels.Length; y++)
-            {
-               pixels[y] = WHITE;
-            }
-
-            //Copy the data from the byte array into BitmapData.Scan0
-            Marshal.Copy(pixels, 0, bmpData.Scan0, pixels.Length);
-         }
-         finally
-         {
-            //Unlock the pixels
-            bmp.UnlockBits(bmpData);
          }
 
          if (outputContent)
          {
-            switch (format)
-            {
-               case BarcodeFormat.EAN_8:
-                  if (content.Length < 8)
-                     content = OneDimensionalCodeWriter.CalculateChecksumDigitModulo10(content);
-                  content = content.Insert(4, "   ");
-                  break;
-               case BarcodeFormat.EAN_13:
-                  if (content.Length < 13)
-                     content = OneDimensionalCodeWriter.CalculateChecksumDigitModulo10(content);
-                  content = content.Insert(7, "   ");
-                  content = content.Insert(1, "   ");
-                  break;
-            }
-            var font = new Font("Arial", 10, FontStyle.Regular);
-            using (var g = Graphics.FromImage(bmp))
-            {
-               var drawFormat = new StringFormat {Alignment = StringAlignment.Center};
-               g.DrawString(content, font, Brushes.Black, width / 2, height - 14, drawFormat);
-            }
+            //switch (format)
+            //{
+            //   case BarcodeFormat.EAN_8:
+            //      if (content.Length < 8)
+            //         content = OneDimensionalCodeWriter.CalculateChecksumDigitModulo10(content);
+            //      content = content.Insert(4, "   ");
+            //      break;
+            //   case BarcodeFormat.EAN_13:
+            //      if (content.Length < 13)
+            //         content = OneDimensionalCodeWriter.CalculateChecksumDigitModulo10(content);
+            //      content = content.Insert(7, "   ");
+            //      content = content.Insert(1, "   ");
+            //      break;
+            //}
+            bmp.DrawText(content, null, Color.Black,  width / 2, height - 14);
          }
 
          return bmp;

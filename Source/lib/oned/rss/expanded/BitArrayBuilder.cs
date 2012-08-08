@@ -24,7 +24,8 @@
  *   http://www.piramidepse.com/
  */
 
-using System.Collections.Generic;
+
+using System.Collections;
 using ZXing.Common;
 
 namespace ZXing.OneD.RSS.Expanded
@@ -35,10 +36,10 @@ namespace ZXing.OneD.RSS.Expanded
    /// </summary>
    static class BitArrayBuilder
    {
-      internal static BitArray buildBitArray(List<ExpandedPair> pairs)
+      internal static BitArray buildBitArray(ArrayList pairs)
       {
          int charNumber = (pairs.Count << 1) - 1;
-         if (pairs[pairs.Count - 1].RightChar == null)
+         if (((ExpandedPair)(pairs[pairs.Count - 1])).RightChar == null)
          {
             charNumber -= 1;
          }
@@ -48,7 +49,7 @@ namespace ZXing.OneD.RSS.Expanded
          BitArray binary = new BitArray(size);
          int accPos = 0;
 
-         ExpandedPair firstPair = pairs[0];
+         ExpandedPair firstPair = (ExpandedPair)pairs[0];
          int firstValue = firstPair.RightChar.Value;
          for (int i = 11; i >= 0; --i)
          {
@@ -61,7 +62,7 @@ namespace ZXing.OneD.RSS.Expanded
 
          for (int i = 1; i < pairs.Count; ++i)
          {
-            ExpandedPair currentPair = pairs[i];
+            ExpandedPair currentPair = (ExpandedPair)pairs[i];
 
             int leftValue = currentPair.LeftChar.Value;
             for (int j = 11; j >= 0; --j)

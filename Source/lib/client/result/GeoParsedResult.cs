@@ -104,13 +104,13 @@ namespace ZXing.Client.Result
          get
          {
             var result = new StringBuilder(20);
-            result.AppendFormat(CultureInfo.InvariantCulture, "{0:0.0###########}", latitude);
+            result.Append(latitude.ToString("0.0###########"));
             result.Append(", ");
-            result.AppendFormat(CultureInfo.InvariantCulture, "{0:0.0###########}", longitude);
+            result.Append(longitude.ToString("0.0###########"));
             if (altitude > 0.0)
             {
                result.Append(", ");
-               result.AppendFormat(CultureInfo.InvariantCulture, "{0:0.0###########}", altitude);
+               result.Append(altitude.ToString("0.0###########"));
                result.Append('m');
             }
             if (query != null)

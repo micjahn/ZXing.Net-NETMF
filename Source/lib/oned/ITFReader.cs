@@ -15,7 +15,7 @@
  */
 
 using System;
-using System.Collections.Generic;
+using System.Collections;
 using System.Text;
 using ZXing.Common;
 
@@ -76,7 +76,7 @@ namespace ZXing.OneD
                                               new int[] {N, W, N, W, N} // 9
                                            };
 
-      override public Result decodeRow(int rowNumber, BitArray row, IDictionary<DecodeHintType, object> hints)
+      override public Result decodeRow(int rowNumber, BitArray row, Hashtable hints)
       {
          // Find out where the Middle section (payload) starts & ends
          int[] startRange = decodeStart(row);
@@ -94,7 +94,7 @@ namespace ZXing.OneD
          String resultString = result.ToString();
 
          int[] allowedLengths = null;
-         if (hints != null && hints.ContainsKey(DecodeHintType.ALLOWED_LENGTHS))
+         if (hints != null && hints.Contains(DecodeHintType.ALLOWED_LENGTHS))
          {
             allowedLengths = (int[])hints[DecodeHintType.ALLOWED_LENGTHS];
 

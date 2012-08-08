@@ -15,7 +15,7 @@
 */
 
 using System;
-using System.Collections.Generic;
+using System.Collections;
 using System.Text;
 using ZXing.Common;
 
@@ -51,13 +51,13 @@ namespace ZXing.QrCode.Internal
       internal static DecoderResult decode(byte[] bytes,
                                   Version version,
                                   ErrorCorrectionLevel ecLevel,
-                                  IDictionary<DecodeHintType, object> hints)
+                                  Hashtable hints)
       {
          var bits = new BitSource(bytes);
          var result = new StringBuilder(50);
          CharacterSetECI currentCharacterSetECI = null;
          bool fc1InEffect = false;
-         var byteSegments = new List<byte[]>(1);
+         var byteSegments = new ArrayList();
          Mode mode;
          do
          {
@@ -153,7 +153,7 @@ namespace ZXing.QrCode.Internal
             }
          } while (mode != Mode.TERMINATOR);
 
-         var resultString = result.ToString().Replace("\r\n", "\n").Replace("\n", Environment.NewLine);
+         var resultString = result.ToString();
          return new DecoderResult(bytes,
                                   resultString,
                                   byteSegments.Count == 0 ? null : byteSegments,
@@ -200,7 +200,7 @@ namespace ZXing.QrCode.Internal
 
          try
          {
-            result.Append(Encoding.GetEncoding(StringUtils.GB2312).GetString(buffer, 0, buffer.Length));
+            result.Append(Encoding.UTF8.GetChars(buffer, 0, buffer.Length).ToString());
          }
          catch (Exception)
          {
@@ -247,7 +247,7 @@ namespace ZXing.QrCode.Internal
          // Shift_JIS may not be supported in some environments:
          try
          {
-            result.Append(Encoding.GetEncoding(StringUtils.SHIFT_JIS).GetString(buffer, 0, buffer.Length));
+            result.Append(Encoding.UTF8.GetChars(buffer, 0, buffer.Length));
          }
          catch (Exception)
          {
@@ -260,8 +260,8 @@ namespace ZXing.QrCode.Internal
                                             StringBuilder result,
                                             int count,
                                             CharacterSetECI currentCharacterSetECI,
-                                            IList<byte[]> byteSegments,
-                                            IDictionary<DecodeHintType, object> hints)
+                                            IList byteSegments,
+                                            Hashtable hints)
       {
          // Don't crash trying to read more bits than we have available.
          if (count << 3 > bits.available())
@@ -290,7 +290,7 @@ namespace ZXing.QrCode.Internal
          }
          try
          {
-            result.Append(Encoding.GetEncoding(encoding).GetString(readBytes, 0, readBytes.Length));
+            result.Append(Encoding.UTF8.GetChars(readBytes, 0, readBytes.Length));
          }
          catch (Exception)
          {
@@ -355,7 +355,7 @@ namespace ZXing.QrCode.Internal
                   {
                      // In alpha mode, % should be converted to FNC1 separator 0x1D
                      result.Remove(i, 1);
-                     result.Insert(i, new[] { (char)0x1D });
+                     result.Insert(i, new[] { (char)0x1D }, 0, 1);
                   }
                }
             }

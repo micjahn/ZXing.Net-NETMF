@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-using System.Collections.Generic;
 
+using System.Collections;
 using ZXing.Common;
 using ZXing.Aztec.Internal;
 
@@ -50,7 +50,7 @@ namespace ZXing.Aztec
       /// <returns>
       /// String which the barcode encodes
       /// </returns>
-      public Result decode(BinaryBitmap image, IDictionary<DecodeHintType, object> hints)
+      public Result decode(BinaryBitmap image, Hashtable hints)
       {
          var blackmatrix = image.BlackMatrix;
          if (blackmatrix == null)
@@ -62,7 +62,7 @@ namespace ZXing.Aztec
          ResultPoint[] points = detectorResult.Points;
 
          if (hints != null &&
-             hints.ContainsKey(DecodeHintType.NEED_RESULT_POINT_CALLBACK))
+             hints.Contains(DecodeHintType.NEED_RESULT_POINT_CALLBACK))
          {
             var rpcb = (ResultPointCallback)hints[DecodeHintType.NEED_RESULT_POINT_CALLBACK];
             if (rpcb != null)
@@ -80,7 +80,7 @@ namespace ZXing.Aztec
 
          Result result = new Result(decoderResult.Text, decoderResult.RawBytes, points, BarcodeFormat.AZTEC);
 
-         IList<byte[]> byteSegments = decoderResult.ByteSegments;
+         var byteSegments = decoderResult.ByteSegments;
          if (byteSegments != null)
          {
             result.putMetadata(ResultMetadataType.BYTE_SEGMENTS, byteSegments);

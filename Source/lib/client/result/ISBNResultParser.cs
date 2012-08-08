@@ -45,7 +45,9 @@ namespace ZXing.Client.Result
          {
             return null;
          }
-         if (!rawText.StartsWith("978") && !rawText.StartsWith("979"))
+         if (rawText.Length < 3 ||
+             (String.Compare(rawText.Substring(0, 3), "978") != 0 &&
+              String.Compare(rawText.Substring(0, 3), "979") != 0))
          {
             return null;
          }

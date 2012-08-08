@@ -15,7 +15,7 @@
 */
 
 using System;
-using System.Collections.Generic;
+using System.Collections;
 
 namespace ZXing
 {
@@ -45,7 +45,7 @@ namespace ZXing
       /// <code>null</code>. This contains optional metadata about what was detected about the barcode,
       /// like orientation.
       /// </returns>
-      public IDictionary<ResultMetadataType, object> ResultMetadata { get; private set; }
+      public IDictionary ResultMetadata { get; private set; }
 
       /// <summary>
       /// Gets the timestamp.
@@ -98,7 +98,7 @@ namespace ZXing
       {
          if (ResultMetadata == null)
          {
-            ResultMetadata = new Dictionary<ResultMetadataType, object>();
+            ResultMetadata = new Hashtable();
          }
          ResultMetadata[type] = value;
       }
@@ -107,7 +107,7 @@ namespace ZXing
       /// Adds a list of metadata to the result
       /// </summary>
       /// <param name="metadata">The metadata.</param>
-      public void putAllMetadata(IDictionary<ResultMetadataType, object> metadata)
+      public void putAllMetadata(IDictionary metadata)
       {
          if (metadata != null)
          {
@@ -117,7 +117,7 @@ namespace ZXing
             }
             else
             {
-               foreach (var entry in metadata)
+               foreach (DictionaryEntry entry in metadata)
                   ResultMetadata[entry.Key] = entry.Value;
             }
          }

@@ -16,7 +16,7 @@
 
 
 using System;
-using System.Collections.Generic;
+using System.Collections;
 using System.Text;
 
 using ZXing.Common;
@@ -45,7 +45,7 @@ namespace ZXing.OneD
             return null;
 
          String resultString = result.ToString();
-         IDictionary<ResultMetadataType, Object> extensionData = parseExtensionString(resultString);
+         IDictionary extensionData = parseExtensionString(resultString);
 
          Result extensionResult =
              new Result(resultString,
@@ -148,7 +148,7 @@ namespace ZXing.OneD
       /// <param name="raw">raw content of extension</param>
       /// <returns>formatted interpretation of raw content as a {@link Map} mapping
       /// one {@link ResultMetadataType} to appropriate value, or {@code null} if not known</returns>
-      private static IDictionary<ResultMetadataType, Object> parseExtensionString(String raw)
+      private static IDictionary parseExtensionString(String raw)
       {
          if (raw.Length != 5)
          {
@@ -159,7 +159,7 @@ namespace ZXing.OneD
          {
             return null;
          }
-         IDictionary<ResultMetadataType, Object> result = new Dictionary<ResultMetadataType, Object>();
+         var result = new Hashtable();
          result[ResultMetadataType.SUGGESTED_PRICE] = value;
          return result;
       }

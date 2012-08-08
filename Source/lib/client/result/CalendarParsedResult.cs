@@ -46,7 +46,7 @@ namespace ZXing.Client.Result
       private readonly String summary;
       private readonly DateTime start;
       private readonly bool startAllDay;
-      private readonly DateTime? end;
+      private readonly NullableDateTime end;
       private readonly bool endAllDay;
       private readonly String location;
       private readonly String organizer;
@@ -69,8 +69,8 @@ namespace ZXing.Client.Result
          this.summary = summary;
          try
          {
-            this.start = parseDate(startString);
-            this.end = endString == null ? (DateTime?)null : parseDate(endString);
+            this.start = parseDate(startString).Value;
+            this.end = endString == null ? new NullableDateTime() : parseDate(endString);
          }
          catch (Exception pe)
          {
@@ -111,7 +111,7 @@ namespace ZXing.Client.Result
       /// <summary>
       /// May return null if the event has no duration.
       /// </summary>
-      public DateTime? End
+      public NullableDateTime End
       {
          get { return end; }
       }
@@ -161,7 +161,7 @@ namespace ZXing.Client.Result
          {
             var result = new StringBuilder(100);
             maybeAppend(summary, result);
-            maybeAppend(format(startAllDay, start), result);
+            maybeAppend(format(startAllDay, new NullableDateTime(start)), result);
             maybeAppend(format(endAllDay, end), result);
             maybeAppend(location, result);
             maybeAppend(organizer, result);
@@ -178,16 +178,16 @@ namespace ZXing.Client.Result
       /// <param name="when">The string to parse</param>
       /// <returns></returns>
       /// <exception cref="ArgumentException">if not a date formatted string</exception>
-      private static DateTime parseDate(String when)
+      private static NullableDateTime parseDate(String when)
       {
          if (!DATE_TIME.Match(when).Success)
          {
-            throw new ArgumentException(String.Format("no date format: {0}", when));
+            throw new ArgumentException("no date format: " + when);
          }
          if (when.Length == 8)
          {
             // Show only year/month/day
-            return DateTime.ParseExact(when, DATE_FORMAT, CultureInfo.InvariantCulture);
+            return new NullableDateTime(ParseExactDate(when));
          }
          else
          {
@@ -195,26 +195,46 @@ namespace ZXing.Client.Result
             DateTime date;
             if (when.Length == 16 && when[15] == 'Z')
             {
-               date = DateTime.ParseExact(when.Substring(0, 15), DATE_TIME_FORMAT, CultureInfo.InvariantCulture);
-               date = TimeZoneInfo.ConvertTime(date, TimeZoneInfo.Local);
+               date = ParseExactDateTime(when.Substring(0, 15));
+               // date = TimeZoneInfo.ConvertTime(date, TimeZoneInfo.Local);
             }
             else
             {
-               date = DateTime.ParseExact(when, DATE_TIME_FORMAT, CultureInfo.InvariantCulture);
+               date = ParseExactDateTime(when);
             }
-            return date;
+            return new NullableDateTime(date);
          }
       }
 
-      private static String format(bool allDay, DateTime? date)
+      private static DateTime ParseExactDate(string dateString)
+      {
+         return new DateTime(
+            int.Parse(dateString.Substring(0, 4)),
+            int.Parse(dateString.Substring(4, 2)),
+            int.Parse(dateString.Substring(6, 2)));
+      }
+
+      private static DateTime ParseExactDateTime(string dateString)
+      {
+         return new DateTime(
+            int.Parse(dateString.Substring(0, 4)),
+            int.Parse(dateString.Substring(4, 2)),
+            int.Parse(dateString.Substring(6, 2)),
+            int.Parse(dateString.Substring(9, 2)),
+            int.Parse(dateString.Substring(11, 2)),
+            int.Parse(dateString.Substring(13, 2))
+            );
+      }
+
+      private static String format(bool allDay, NullableDateTime date)
       {
          if (date == null)
          {
             return null;
          }
          if (allDay)
-            return date.Value.ToString("D", CultureInfo.CurrentCulture);
-         return date.Value.ToString("F", CultureInfo.CurrentCulture);
+            return date.Value.ToString("D");
+         return date.Value.ToString("F");
       }
    }
 }

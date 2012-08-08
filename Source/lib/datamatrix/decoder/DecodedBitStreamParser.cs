@@ -15,7 +15,7 @@
  */
 
 using System;
-using System.Collections.Generic;
+using System.Collections;
 using System.Text;
 using ZXing.Common;
 
@@ -79,7 +79,7 @@ namespace ZXing.Datamatrix.Internal
          BitSource bits = new BitSource(bytes);
          StringBuilder result = new StringBuilder(100);
          StringBuilder resultTrailer = new StringBuilder(0);
-         List<byte[]> byteSegments = new List<byte[]>(1);
+         ArrayList byteSegments = new ArrayList();
          Mode mode = Mode.ASCII_ENCODE;
          do
          {
@@ -195,12 +195,12 @@ namespace ZXing.Datamatrix.Internal
             else if (oneByte == 236)
             {  // 05 Macro
                result.Append("[)>\u001E05\u001D");
-               resultTrailer.Insert(0, "\u001E\u0004");
+               resultTrailer.Insert(0, "\u001E\u0004", "\u001E\u0004".Length);
             }
             else if (oneByte == 237)
             {  // 06 Macro
                result.Append("[)>\u001E06\u001D");
-               resultTrailer.Insert(0, "\u001E\u0004");
+               resultTrailer.Insert(0, "\u001E\u0004", "\u001E\u0004".Length);
             }
             else if (oneByte == 238)
             {  // Latch to ANSI X12 encodation
@@ -598,7 +598,7 @@ namespace ZXing.Datamatrix.Internal
       /// </summary>
       private static bool decodeBase256Segment(BitSource bits,
                                                StringBuilder result,
-                                               IList<byte[]> byteSegments)
+                                               IList byteSegments)
       {
          // Figure out how long the Base 256 Segment is.
          int codewordPosition = 1 + bits.ByteOffset; // position is 1-indexed
@@ -637,7 +637,9 @@ namespace ZXing.Datamatrix.Internal
          byteSegments.Add(bytes);
          try
          {
-#if (WINDOWS_PHONE70 || WINDOWS_PHONE71 || SILVERLIGHT4 || SILVERLIGHT5)
+#if (MF_FRAMEWORK)
+            result.Append(Encoding.UTF8.GetChars(bytes, 0, bytes.Length).ToString());
+#elif (WINDOWS_PHONE70 || WINDOWS_PHONE71 || SILVERLIGHT4 || SILVERLIGHT5)
             result.Append(Encoding.GetEncoding("ISO-8859-1").GetString(bytes, 0, bytes.Length));
 #else
             result.Append(Encoding.GetEncoding("ISO-8859-1").GetString(bytes));

@@ -48,17 +48,14 @@ namespace ZXing
          var luminanceIndex = 0;
          for (var index = 0; index < rgb565RawData.Length; index += 2, luminanceIndex++)
          {
-            var byte1 = rgb565RawData[index];
-            var byte2 = rgb565RawData[index + 1];
+            var byte1 = rgb565RawData[0];
+            var byte2 = rgb565RawData[1];
             // cheap, not fully accurate conversion
-            var b5 = byte1 & 0x1F;
-            var g5 = (((byte1 & 0xE0) >> 5) | ((byte2 & 0x03) << 3)) & 0x1F;
-            var r5 = (byte2 >> 2) & 0x1F;
-            var r8 = (r5 * 527 + 23) >> 6;
-            var g8 = (g5 * 527 + 23) >> 6;
-            var b8 = (b5 * 527 + 23) >> 6;
+            var r = (byte1 & 0x1f);
+            var g = ((byte2 & 0x07) | ((byte1 & 0xe0) >> 5));
+            var b = ((byte2 & 0xf8) >> 3);
 
-            luminances[luminanceIndex] = (byte)(0.3 * r8 + 0.59 * g8 + 0.11 * b8 + 0.01);
+            luminances[luminanceIndex++] = (byte)((r + g + g + b) >> 2);
          }
       }
 

@@ -25,7 +25,8 @@
  */
 
 using System;
-using System.Collections.Generic;
+using System.Collections;
+
 
 namespace ZXing.OneD.RSS.Expanded.Decoders
 {
@@ -41,14 +42,14 @@ namespace ZXing.OneD.RSS.Expanded.Decoders
       // "DIGITS", new Integer(LENGTH)
       //    or
       // "DIGITS", VARIABLE_LENGTH, new Integer(MAX_SIZE)
-      private static IDictionary<string, object[]> TWO_DIGIT_DATA_LENGTH;
-      private static IDictionary<string, object[]> THREE_DIGIT_DATA_LENGTH;
-      private static IDictionary<string, object[]> THREE_DIGIT_PLUS_DIGIT_DATA_LENGTH;
-      private static IDictionary<string, object[]> FOUR_DIGIT_DATA_LENGTH;
+      private static IDictionary TWO_DIGIT_DATA_LENGTH;
+      private static IDictionary THREE_DIGIT_DATA_LENGTH;
+      private static IDictionary THREE_DIGIT_PLUS_DIGIT_DATA_LENGTH;
+      private static IDictionary FOUR_DIGIT_DATA_LENGTH;
 
       static FieldParser()
       {
-         TWO_DIGIT_DATA_LENGTH = new Dictionary<string, object[]>
+         TWO_DIGIT_DATA_LENGTH = new Hashtable
                                     {
                                        {"00", new object[] {18}},
                                        {"01", new object[] {14}},
@@ -76,7 +77,7 @@ namespace ZXing.OneD.RSS.Expanded.Decoders
                                        {"98", new object[] {VARIABLE_LENGTH, 30}},
                                        {"99", new object[] {VARIABLE_LENGTH, 30}}
                                     };
-         THREE_DIGIT_DATA_LENGTH = new Dictionary<string, object[]>
+         THREE_DIGIT_DATA_LENGTH = new Hashtable
                                       {
                                          // Same format as above
 
@@ -105,7 +106,7 @@ namespace ZXing.OneD.RSS.Expanded.Decoders
                                          {"425", new object[] {3}},
                                          {"426", new object[] {3}},
                                       };
-         THREE_DIGIT_PLUS_DIGIT_DATA_LENGTH = new Dictionary<string, object[]>
+         THREE_DIGIT_PLUS_DIGIT_DATA_LENGTH = new Hashtable
                                                  {
                                                     {"310", new object[] {6}},
                                                     {"311", new object[] {6}},
@@ -166,7 +167,7 @@ namespace ZXing.OneD.RSS.Expanded.Decoders
                                                     {"703", new object[] {VARIABLE_LENGTH, 30}}
 
                                                  };
-         FOUR_DIGIT_DATA_LENGTH = new Dictionary<string, object[]>
+         FOUR_DIGIT_DATA_LENGTH = new Hashtable
                                      {
                                         {"7001", new object[] {13}},
                                         {"7002", new object[] {VARIABLE_LENGTH, 30}},
@@ -209,9 +210,9 @@ namespace ZXing.OneD.RSS.Expanded.Decoders
 
          String firstTwoDigits = rawInformation.Substring(0, 2);
 
-         if (TWO_DIGIT_DATA_LENGTH.ContainsKey(firstTwoDigits))
+         if (TWO_DIGIT_DATA_LENGTH.Contains(firstTwoDigits))
          {
-            var dataLength = TWO_DIGIT_DATA_LENGTH[firstTwoDigits];
+            var dataLength = (object[])TWO_DIGIT_DATA_LENGTH[firstTwoDigits];
             if (dataLength[0] == VARIABLE_LENGTH)
             {
                return processVariableAI(2, (int)dataLength[1], rawInformation);
@@ -226,9 +227,9 @@ namespace ZXing.OneD.RSS.Expanded.Decoders
 
          String firstThreeDigits = rawInformation.Substring(0, 3);
 
-         if (THREE_DIGIT_DATA_LENGTH.ContainsKey(firstThreeDigits))
+         if (THREE_DIGIT_DATA_LENGTH.Contains(firstThreeDigits))
          {
-            var dataLength = THREE_DIGIT_DATA_LENGTH[firstThreeDigits];
+            var dataLength = (object[])THREE_DIGIT_DATA_LENGTH[firstThreeDigits];
             if (dataLength[0] == VARIABLE_LENGTH)
             {
                return processVariableAI(3, (int)dataLength[1], rawInformation);
@@ -236,9 +237,9 @@ namespace ZXing.OneD.RSS.Expanded.Decoders
             return processFixedAI(3, (int)dataLength[0], rawInformation);
          }
 
-         if (THREE_DIGIT_PLUS_DIGIT_DATA_LENGTH.ContainsKey(firstThreeDigits))
+         if (THREE_DIGIT_PLUS_DIGIT_DATA_LENGTH.Contains(firstThreeDigits))
          {
-            var dataLength = THREE_DIGIT_PLUS_DIGIT_DATA_LENGTH[firstThreeDigits];
+            var dataLength = (object[])THREE_DIGIT_PLUS_DIGIT_DATA_LENGTH[firstThreeDigits];
                if (dataLength[0] == VARIABLE_LENGTH)
                {
                   return processVariableAI(4, (int)dataLength[1], rawInformation);
@@ -253,9 +254,9 @@ namespace ZXing.OneD.RSS.Expanded.Decoders
 
          String firstFourDigits = rawInformation.Substring(0, 4);
 
-         if (FOUR_DIGIT_DATA_LENGTH.ContainsKey(firstFourDigits))
+         if (FOUR_DIGIT_DATA_LENGTH.Contains(firstFourDigits))
          {
-            var dataLength = FOUR_DIGIT_DATA_LENGTH[firstFourDigits];
+            var dataLength = (object[])FOUR_DIGIT_DATA_LENGTH[firstFourDigits];
             if (dataLength[0] == VARIABLE_LENGTH)
             {
                return processVariableAI(4, (int)dataLength[1], rawInformation);

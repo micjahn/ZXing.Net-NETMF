@@ -297,7 +297,7 @@ namespace ZXing.QrCode.Internal
 
       public override String ToString()
       {
-         return Convert.ToString(versionNumber);
+         return versionNumber.ToString();
       }
 
       /// <summary> See ISO 18004:2006 6.5.1 Table 9</summary>

@@ -15,7 +15,7 @@
  */
 
 using System;
-using System.Collections.Generic;
+using System.Collections;
 using System.Text;
 using ZXing.Common;
 
@@ -34,17 +34,17 @@ namespace ZXing.OneD
       override public Result decodeRow(int rowNumber,
                               BitArray row,
                               int[] startGuardRange,
-                              IDictionary<DecodeHintType, object> hints)
+                              Hashtable hints)
       {
          return maybeReturnResult(ean13Reader.decodeRow(rowNumber, row, startGuardRange, hints));
       }
 
-      override public Result decodeRow(int rowNumber, BitArray row, IDictionary<DecodeHintType, object> hints)
+      override public Result decodeRow(int rowNumber, BitArray row, Hashtable hints)
       {
          return maybeReturnResult(ean13Reader.decodeRow(rowNumber, row, hints));
       }
 
-      override public Result decode(BinaryBitmap image, IDictionary<DecodeHintType, object> hints)
+      override public Result decode(BinaryBitmap image, Hashtable hints)
       {
          return maybeReturnResult(ean13Reader.decode(image, hints));
       }
