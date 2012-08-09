@@ -412,8 +412,12 @@ namespace ZXing
          var multiformatReader = Reader as MultiFormatReader;
 #endif
          var rotationCount = 0;
+         var rotationMaxCount = 1;
 
-         for (; rotationCount < 4; rotationCount++)
+         if (TryHarder)
+            rotationMaxCount = 4;
+
+         for (; rotationCount < rotationMaxCount; rotationCount++)
          {
 #if !(ONLY_QRCODE || ONLY_AZTEC || ONLY_DATAMATRIX || ONLY_MAXICODE || ONLY_ONED || ONLY_PDF417)
 
@@ -422,12 +426,14 @@ namespace ZXing
                result = multiformatReader.decodeWithState(binaryBitmap);
             }
             else
-#endif
             {
                result = Reader.decode(binaryBitmap, hints);
                usePreviousState = true;
             }
-            
+#else
+            result = Reader.decode(binaryBitmap, hints);
+#endif
+
             if (result != null ||
                 !luminanceSource.RotateSupported)
                break;
