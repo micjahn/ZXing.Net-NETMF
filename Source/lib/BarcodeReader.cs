@@ -60,7 +60,21 @@ namespace ZXing
       {
          get
          {
+#if ONLY_QRCODE
+            return reader ?? (reader = new QrCode.QRCodeReader());
+#elif ONLY_AZTEC
+            return reader ?? (reader = new Aztec.AztecReader());
+#elif ONLY_DATAMATRIX
+            return reader ?? (reader = new Datamatrix.DataMatrixReader());
+#elif ONLY_MAXICODE
+            return reader ?? (reader = new Maxicode.MaxiCodeReader());
+#elif ONLY_ONED
+            return reader ?? (reader = new OneD.MultiFormatOneDReader(null));
+#elif ONLY_PDF417
+            return reader ?? (reader = new PDF417.PDF417Reader());
+#else
             return reader ?? (reader = new MultiFormatReader());
+#endif
          }
       }
 
@@ -288,7 +302,21 @@ namespace ZXing
       /// Initializes a new instance of the <see cref="BarcodeReader"/> class.
       /// </summary>
       public BarcodeReader()
+#if ONLY_QRCODE
+         : this(new QrCode.QRCodeReader(), defaultCreateLuminanceSource, defaultCreateBinarizer)
+#elif ONLY_AZTEC
+         : this(new Aztec.AztecReader(), defaultCreateLuminanceSource, defaultCreateBinarizer)
+#elif ONLY_DATAMATRIX
+         : this(new Datamatrix.DataMatrixReader(), defaultCreateLuminanceSource, defaultCreateBinarizer)
+#elif ONLY_MAXICODE
+         : this(new Maxicode.MaxiCodeReader(), defaultCreateLuminanceSource, defaultCreateBinarizer)
+#elif ONLY_ONED
+         : this(new OneD.MultiFormatOneDReader(null), defaultCreateLuminanceSource, defaultCreateBinarizer)
+#elif ONLY_PDF417
+         : this(new PDF417.PDF417Reader(), defaultCreateLuminanceSource, defaultCreateBinarizer)
+#else
          : this(new MultiFormatReader(), defaultCreateLuminanceSource, defaultCreateBinarizer)
+#endif
       {
       }
 
@@ -314,7 +342,21 @@ namespace ZXing
          CreateBinarizerDelegate createBinarizer
          )
       {
+#if ONLY_QRCODE
+         this.reader = reader ?? new QrCode.QRCodeReader();
+#elif ONLY_AZTEC
+         this.reader = reader ?? new Aztec.AztecReader();
+#elif ONLY_DATAMATRIX
+         this.reader = reader ?? new Datamatrix.DataMatrixReader();
+#elif ONLY_MAXICODE
+         this.reader = reader ?? new Maxicode.MaxiCodeReader();
+#elif ONLY_ONED
+         this.reader = reader ?? new OneD.MultiFormatOneDReader(null);
+#elif ONLY_PDF417
+         this.reader = reader ?? new PDF417.PDF417Reader();
+#else
          this.reader = reader ?? new MultiFormatReader();
+#endif
          this.createLuminanceSource = createLuminanceSource ?? defaultCreateLuminanceSource;
          this.createBinarizer = createBinarizer ?? defaultCreateBinarizer;
          hints = new Hashtable();
@@ -366,16 +408,21 @@ namespace ZXing
 #endif
          var binarizer = CreateBinarizer(luminanceSource);
          var binaryBitmap = new BinaryBitmap(binarizer);
+#if !(ONLY_QRCODE || ONLY_AZTEC || ONLY_DATAMATRIX || ONLY_MAXICODE || ONLY_ONED || ONLY_PDF417)
          var multiformatReader = Reader as MultiFormatReader;
+#endif
          var rotationCount = 0;
 
          for (; rotationCount < 4; rotationCount++)
          {
+#if !(ONLY_QRCODE || ONLY_AZTEC || ONLY_DATAMATRIX || ONLY_MAXICODE || ONLY_ONED || ONLY_PDF417)
+
             if (usePreviousState && multiformatReader != null)
             {
                result = multiformatReader.decodeWithState(binaryBitmap);
             }
             else
+#endif
             {
                result = Reader.decode(binaryBitmap, hints);
                usePreviousState = true;

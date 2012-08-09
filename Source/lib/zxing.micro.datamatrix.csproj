@@ -1,0 +1,93 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <AssemblyName>zxing.micro.datamatrix</AssemblyName>
+    <OutputType>Library</OutputType>
+    <RootNamespace>zxing.micro</RootNamespace>
+    <ProjectTypeGuids>{b69e3092-b931-443c-abe7-7e7b65f2a37f};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{59BC6152-C0D3-42DA-9D69-769A984820B5}</ProjectGuid>
+    <TargetFrameworkVersion>v4.2</TargetFrameworkVersion>
+    <NetMfTargetsBaseDir Condition="'$(NetMfTargetsBaseDir)'==''">$(MSBuildExtensionsPath32)\Microsoft\.NET Micro Framework\</NetMfTargetsBaseDir>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\Build\Debug\micro\</OutputPath>
+    <DefineConstants>DEBUG;TRACE,MF_FRAMEWORK,MF_FRAMEWORK_VERSION_V4_2,ONLY_DATAMATRIX</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\Build\Release\micro\</OutputPath>
+    <DefineConstants>TRACE,MF_FRAMEWORK,MF_FRAMEWORK_VERSION_V4_2,ONLY_DATAMATRIX</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <Import Project="$(NetMfTargetsBaseDir)$(TargetFrameworkVersion)\CSharp.Targets" />
+  <ItemGroup>
+    <Compile Include="BarcodeFormat.cs" />
+    <Compile Include="BarcodeReader.cs" />
+    <Compile Include="BaseLuminanceSource.cs" />
+    <Compile Include="Binarizer.cs" />
+    <Compile Include="BinaryBitmap.cs" />
+    <Compile Include="common\BitArray.cs" />
+    <Compile Include="common\BitMatrix.cs" />
+    <Compile Include="common\BitMatrix.Drawing.cs" />
+    <Compile Include="common\BitSource.cs" />
+    <Compile Include="common\CharacterSetECI.cs" />
+    <Compile Include="common\DecoderResult.cs" />
+    <Compile Include="common\DefaultGridSampler.cs" />
+    <Compile Include="common\DetectorResult.cs" />
+    <Compile Include="common\detector\MathUtils.cs" />
+    <Compile Include="common\detector\MonochromeRectangleDetector.cs" />
+    <Compile Include="common\detector\WhiteRectangleDetector.cs" />
+    <Compile Include="common\ECI.cs" />
+    <Compile Include="common\GlobalHistogramBinarizer.cs" />
+    <Compile Include="common\GridSampler.cs" />
+    <Compile Include="common\HybridBinarizer.cs" />
+    <Compile Include="common\PerspectiveTransform.cs" />
+    <Compile Include="common\reedsolomon\GenericGF.cs" />
+    <Compile Include="common\reedsolomon\GenericGFPoly.cs" />
+    <Compile Include="common\reedsolomon\ReedSolomonDecoder.cs" />
+    <Compile Include="common\reedsolomon\ReedSolomonEncoder.cs" />
+    <Compile Include="common\StringUtils.cs" />
+    <Compile Include="datamatrix\DataMatrixReader.cs" />
+    <Compile Include="datamatrix\decoder\BitMatrixParser.cs" />
+    <Compile Include="datamatrix\decoder\DataBlock.cs" />
+    <Compile Include="datamatrix\decoder\DecodedBitStreamParser.cs" />
+    <Compile Include="datamatrix\decoder\Decoder.cs" />
+    <Compile Include="datamatrix\decoder\Version.cs" />
+    <Compile Include="datamatrix\detector\Detector.cs" />
+    <Compile Include="DecodeHintType.cs" />
+    <Compile Include="EncodeHintType.cs" />
+    <Compile Include="FormatException.cs" />
+    <Compile Include="IBarcodeReader.cs" />
+    <Compile Include="LuminanceSource.cs" />
+    <Compile Include="NotFoundException.cs" />
+    <Compile Include="PlanarYUVLuminanceSource.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Reader.cs" />
+    <Compile Include="ReaderException.cs" />
+    <Compile Include="Result.cs" />
+    <Compile Include="ResultMetadataType.cs" />
+    <Compile Include="ResultPoint.cs" />
+    <Compile Include="ResultPointCallback.cs" />
+    <Compile Include="RGB565LuminanceSource.cs" />
+    <Compile Include="RGBLuminanceSource.cs" />
+    <Compile Include="RGBLuminanceSource.Drawing.cs" />
+    <Compile Include="SupportClass.cs" />
+    <Compile Include="Writer.cs" />
+    <Compile Include="WriterException.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.SPOT.Graphics" />
+    <Reference Include="Microsoft.SPOT.Native">
+    </Reference>
+    <Reference Include="System.IO" />
+  </ItemGroup>
+</Project>

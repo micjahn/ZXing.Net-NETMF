@@ -16,7 +16,7 @@
 
 using System;
 using System.Text;
-using ZXing.QrCode.Internal;
+//using ZXing.QrCode.Internal;
 using ZXing.Common;
 
 namespace ZXing.Maxicode.Internal

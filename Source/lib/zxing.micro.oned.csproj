@@ -1,0 +1,181 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <AssemblyName>zxing.micro.oned</AssemblyName>
+    <OutputType>Library</OutputType>
+    <RootNamespace>zxing.micro</RootNamespace>
+    <ProjectTypeGuids>{b69e3092-b931-443c-abe7-7e7b65f2a37f};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{823BF459-E261-4C29-9B12-CD563C49B5EF}</ProjectGuid>
+    <TargetFrameworkVersion>v4.2</TargetFrameworkVersion>
+    <NetMfTargetsBaseDir Condition="'$(NetMfTargetsBaseDir)'==''">$(MSBuildExtensionsPath32)\Microsoft\.NET Micro Framework\</NetMfTargetsBaseDir>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\Build\Debug\micro\</OutputPath>
+    <DefineConstants>DEBUG;TRACE,MF_FRAMEWORK,MF_FRAMEWORK_VERSION_V4_2,ONLY_ONED</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\Build\Release\micro\</OutputPath>
+    <DefineConstants>TRACE,MF_FRAMEWORK,MF_FRAMEWORK_VERSION_V4_2,ONLY_ONED</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <Import Project="$(NetMfTargetsBaseDir)$(TargetFrameworkVersion)\CSharp.Targets" />
+  <ItemGroup>
+    <Compile Include="BarcodeFormat.cs" />
+    <Compile Include="BarcodeReader.cs" />
+    <Compile Include="BaseLuminanceSource.cs" />
+    <Compile Include="Binarizer.cs" />
+    <Compile Include="BinaryBitmap.cs" />
+    <Compile Include="client\result\AbstractDoCoMoResultParser.cs" />
+    <Compile Include="client\result\AddressBookAUResultParser.cs" />
+    <Compile Include="client\result\AddressBookDoCoMoResultParser.cs" />
+    <Compile Include="client\result\AddressBookParsedResult.cs" />
+    <Compile Include="client\result\BizcardResultParser.cs" />
+    <Compile Include="client\result\BookmarkDoCoMoResultParser.cs" />
+    <Compile Include="client\result\CalendarParsedResult.cs" />
+    <Compile Include="client\result\EmailAddressParsedResult.cs" />
+    <Compile Include="client\result\EmailAddressResultParser.cs" />
+    <Compile Include="client\result\EmailDoCoMoResultParser.cs" />
+    <Compile Include="client\result\ExpandedProductParsedResult.cs" />
+    <Compile Include="client\result\ExpandedProductResultParser.cs" />
+    <Compile Include="client\result\GeoParsedResult.cs" />
+    <Compile Include="client\result\GeoResultParser.cs" />
+    <Compile Include="client\result\ISBNParsedResult.cs" />
+    <Compile Include="client\result\ISBNResultParser.cs" />
+    <Compile Include="client\result\ParsedResult.cs" />
+    <Compile Include="client\result\ParsedResultType.cs" />
+    <Compile Include="client\result\ProductParsedResult.cs" />
+    <Compile Include="client\result\ProductResultParser.cs" />
+    <Compile Include="client\result\ResultParser.cs" />
+    <Compile Include="client\result\SMSMMSResultParser.cs" />
+    <Compile Include="client\result\SMSParsedResult.cs" />
+    <Compile Include="client\result\SMSTOMMSTOResultParser.cs" />
+    <Compile Include="client\result\SMTPResultParser.cs" />
+    <Compile Include="client\result\TelParsedResult.cs" />
+    <Compile Include="client\result\TelResultParser.cs" />
+    <Compile Include="client\result\TextParsedResult.cs" />
+    <Compile Include="client\result\URIParsedResult.cs" />
+    <Compile Include="client\result\URIResultParser.cs" />
+    <Compile Include="client\result\URLTOResultParser.cs" />
+    <Compile Include="client\result\VCardResultParser.cs" />
+    <Compile Include="client\result\VEventResultParser.cs" />
+    <Compile Include="client\result\WifiParsedResult.cs" />
+    <Compile Include="client\result\WifiResultParser.cs" />
+    <Compile Include="common\BigInteger\Base10BigInteger.cs" />
+    <Compile Include="common\BigInteger\BigInteger.cs" />
+    <Compile Include="common\BigInteger\BigIntegerException.cs" />
+    <Compile Include="common\BigInteger\Sign.cs" />
+    <Compile Include="common\BitArray.cs" />
+    <Compile Include="common\BitMatrix.cs" />
+    <Compile Include="common\BitMatrix.Drawing.cs" />
+    <Compile Include="common\BitSource.cs" />
+    <Compile Include="common\CharacterSetECI.cs" />
+    <Compile Include="common\DecoderResult.cs" />
+    <Compile Include="common\DefaultGridSampler.cs" />
+    <Compile Include="common\DetectorResult.cs" />
+    <Compile Include="common\detector\MathUtils.cs" />
+    <Compile Include="common\detector\MonochromeRectangleDetector.cs" />
+    <Compile Include="common\detector\WhiteRectangleDetector.cs" />
+    <Compile Include="common\ECI.cs" />
+    <Compile Include="common\GlobalHistogramBinarizer.cs" />
+    <Compile Include="common\GridSampler.cs" />
+    <Compile Include="common\HybridBinarizer.cs" />
+    <Compile Include="common\PerspectiveTransform.cs" />
+    <Compile Include="common\reedsolomon\GenericGF.cs" />
+    <Compile Include="common\reedsolomon\GenericGFPoly.cs" />
+    <Compile Include="common\reedsolomon\ReedSolomonDecoder.cs" />
+    <Compile Include="common\reedsolomon\ReedSolomonEncoder.cs" />
+    <Compile Include="common\StringUtils.cs" />
+    <Compile Include="DecodeHintType.cs" />
+    <Compile Include="EncodeHintType.cs" />
+    <Compile Include="FormatException.cs" />
+    <Compile Include="IBarcodeReader.cs" />
+    <Compile Include="LuminanceSource.cs" />
+    <Compile Include="micro\NullableDateTime.cs" />
+    <Compile Include="NotFoundException.cs" />
+    <Compile Include="oned\CodaBarReader.cs" />
+    <Compile Include="oned\CodaBarWriter.cs" />
+    <Compile Include="oned\Code128Reader.cs" />
+    <Compile Include="oned\Code128Writer.cs" />
+    <Compile Include="oned\Code39Reader.cs" />
+    <Compile Include="oned\Code39Writer.cs" />
+    <Compile Include="oned\Code93Reader.cs" />
+    <Compile Include="oned\EAN13Reader.cs" />
+    <Compile Include="oned\EAN13Writer.cs" />
+    <Compile Include="oned\EAN8Reader.cs" />
+    <Compile Include="oned\EAN8Writer.cs" />
+    <Compile Include="oned\EANManufacturerOrgSupport.cs" />
+    <Compile Include="oned\ITFReader.cs" />
+    <Compile Include="oned\ITFWriter.cs" />
+    <Compile Include="oned\MultiFormatOneDReader.cs" />
+    <Compile Include="oned\MultiFormatUPCEANReader.cs" />
+    <Compile Include="oned\OneDimensionalCodeWriter.cs" />
+    <Compile Include="oned\OneDReader.cs" />
+    <Compile Include="oned\rss\AbstractRSSReader.cs" />
+    <Compile Include="oned\rss\DataCharacter.cs" />
+    <Compile Include="oned\rss\expanded\BitArrayBuilder.cs" />
+    <Compile Include="oned\rss\expanded\decoders\AbstractExpandedDecoder.cs" />
+    <Compile Include="oned\rss\expanded\decoders\AI013103decoder.cs" />
+    <Compile Include="oned\rss\expanded\decoders\AI01320xDecoder.cs" />
+    <Compile Include="oned\rss\expanded\decoders\AI01392xDecoder.cs" />
+    <Compile Include="oned\rss\expanded\decoders\AI01393xDecoder.cs" />
+    <Compile Include="oned\rss\expanded\decoders\AI013x0x1xDecoder.cs" />
+    <Compile Include="oned\rss\expanded\decoders\AI013x0xDecoder.cs" />
+    <Compile Include="oned\rss\expanded\decoders\AI01AndOtherAIs.cs" />
+    <Compile Include="oned\rss\expanded\decoders\AI01decoder.cs" />
+    <Compile Include="oned\rss\expanded\decoders\AI01weightDecoder.cs" />
+    <Compile Include="oned\rss\expanded\decoders\AnyAIDecoder.cs" />
+    <Compile Include="oned\rss\expanded\decoders\BlockParsedResult.cs" />
+    <Compile Include="oned\rss\expanded\decoders\CurrentParsingState.cs" />
+    <Compile Include="oned\rss\expanded\decoders\DecodedChar.cs" />
+    <Compile Include="oned\rss\expanded\decoders\DecodedInformation.cs" />
+    <Compile Include="oned\rss\expanded\decoders\DecodedNumeric.cs" />
+    <Compile Include="oned\rss\expanded\decoders\DecodedObject.cs" />
+    <Compile Include="oned\rss\expanded\decoders\FieldParser.cs" />
+    <Compile Include="oned\rss\expanded\decoders\GeneralAppIdDecoder.cs" />
+    <Compile Include="oned\rss\expanded\ExpandedPair.cs" />
+    <Compile Include="oned\rss\expanded\RSSExpandedReader.cs" />
+    <Compile Include="oned\rss\FinderPattern.cs" />
+    <Compile Include="oned\rss\Pair.cs" />
+    <Compile Include="oned\rss\RSS14Reader.cs" />
+    <Compile Include="oned\rss\RSSUtils.cs" />
+    <Compile Include="oned\UPCAReader.cs" />
+    <Compile Include="oned\UPCAWriter.cs" />
+    <Compile Include="oned\UPCEANExtension2Support.cs" />
+    <Compile Include="oned\UPCEANExtension5Support.cs" />
+    <Compile Include="oned\UPCEANExtensionSupport.cs" />
+    <Compile Include="oned\UPCEANReader.cs" />
+    <Compile Include="oned\UPCEANWriter.cs" />
+    <Compile Include="oned\UPCEReader.cs" />
+    <Compile Include="PlanarYUVLuminanceSource.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Reader.cs" />
+    <Compile Include="ReaderException.cs" />
+    <Compile Include="Result.cs" />
+    <Compile Include="ResultMetadataType.cs" />
+    <Compile Include="ResultPoint.cs" />
+    <Compile Include="ResultPointCallback.cs" />
+    <Compile Include="RGB565LuminanceSource.cs" />
+    <Compile Include="RGBLuminanceSource.cs" />
+    <Compile Include="RGBLuminanceSource.Drawing.cs" />
+    <Compile Include="SupportClass.cs" />
+    <Compile Include="Writer.cs" />
+    <Compile Include="WriterException.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.SPOT.Graphics" />
+    <Reference Include="Microsoft.SPOT.Native">
+    </Reference>
+    <Reference Include="System.IO" />
+    <Reference Include="System.Text.RegularExpressions" />
+  </ItemGroup>
+</Project>

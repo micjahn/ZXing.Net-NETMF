@@ -18,7 +18,6 @@ using System;
 
 using Microsoft.SPOT;
 using Microsoft.SPOT.Presentation.Media;
-using ZXing.OneD;
 
 namespace ZXing.Common
 {
