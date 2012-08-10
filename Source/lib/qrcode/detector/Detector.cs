@@ -298,7 +298,7 @@ namespace ZXing.QrCode.Internal
          otherToX = (int)(fromX + (otherToX - fromX) * scale);
 
          var result2 = sizeOfBlackWhiteBlackRun(fromX, fromY, otherToX, otherToY);
-         if (result2.HasValue)
+         if (!result2.HasValue)
             return result2;
          result.Value += result2.Value;
          return new NullableFloat(result.Value - 1.0f); // -1 because we counted the middle pixel twice

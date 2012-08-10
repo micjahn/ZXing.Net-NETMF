@@ -23,6 +23,8 @@ namespace MicroFrameworkDemo
       }
 
       private Window mainWindow;
+      private Text text;
+      private Image image;
 
       public Window CreateWindow()
       {
@@ -32,16 +34,20 @@ namespace MicroFrameworkDemo
          mainWindow.Height = SystemMetrics.ScreenHeight;
          mainWindow.Width = SystemMetrics.ScreenWidth;
 
-         // Create a single text control.
-         Text text = new Text();
+         var panel = new StackPanel();
 
+         text = new Text();
          text.Font = Resources.GetFont(Resources.FontResources.small);
          text.TextContent = Resources.GetString(Resources.StringResources.String1);
          text.HorizontalAlignment = Microsoft.SPOT.Presentation.HorizontalAlignment.Center;
          text.VerticalAlignment = Microsoft.SPOT.Presentation.VerticalAlignment.Center;
+         panel.Children.Add(text);
+
+         image = new Image();
+         panel.Children.Add(image);
 
          // Add the text control to the window.
-         mainWindow.Child = text;
+         mainWindow.Child = panel;
 
          // Connect the button handler to all of the buttons.
          mainWindow.AddHandler(Buttons.ButtonUpEvent, new RoutedEventHandler(OnButtonUp), false);
@@ -57,23 +63,23 @@ namespace MicroFrameworkDemo
 
       private void OnButtonUp(object sender, RoutedEventArgs evt)
       {
-         ((Text) mainWindow.Child).TextContent = "This will take a while...";
+         text.TextContent = "This will take a while...";
+         var bmp = new Bitmap(Convert.FromBase64String(bitmapString), Bitmap.BitmapImageType.Bmp);
+         image.Bitmap = bmp;
+
          var operation = mainWindow.Dispatcher.BeginInvoke((obj) =>
                                               {
-                                                 var bmp = new Bitmap(Convert.FromBase64String(bitmapString),
-                                                                      Bitmap.BitmapImageType.Bmp);
-                                                 var reader = new ZXing.BarcodeReader();
-                                                 reader.TryHarder = false;
-                                                 return reader.Decode(bmp);
-                                              }, null);
+                                                 var reader = new ZXing.BarcodeReader {TryHarder = false};
+                                                 return reader.Decode((Bitmap)obj);
+                                              }, bmp);
          operation.Wait();
          if (operation.Result != null)
          {
-            ((Text)mainWindow.Child).TextContent = ((ZXing.Result)(operation.Result)).Text;
+            text.TextContent = ((ZXing.Result)(operation.Result)).Text;
          }
          else
          {
-            ((Text) mainWindow.Child).TextContent = "No barcode found.";
+            text.TextContent = "No barcode found.";
          }
       }
 
