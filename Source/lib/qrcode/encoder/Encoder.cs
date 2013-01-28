@@ -17,9 +17,11 @@
 using System;
 using System.Collections;
 using System.Text;
+using Microsoft.SPOT;
 using ZXing.Common;
 using ZXing.Common.ReedSolomon;
 using ZXing.QrCode.Internal;
+using Math = System.Math;
 
 namespace ZXing.QrCode.Internal
 {
@@ -81,6 +83,7 @@ namespace ZXing.QrCode.Internal
          {
             encoding = DEFAULT_BYTE_MODE_ENCODING;
          }
+         bool doSelectMask = hints == null || !hints.Contains(EncodeHintType.QR_DO_MASK_SELECTION) ? false : (bool)hints[EncodeHintType.QR_DO_MASK_SELECTION];
 
          // Pick an encoding mode appropriate for the content. Note that this will not attempt to use
          // multiple modes / segments even if that were more efficient. Twould be nice.
@@ -145,7 +148,9 @@ namespace ZXing.QrCode.Internal
          //  Choose the mask pattern and set to "qrCode".
          int dimension = version.DimensionForVersion;
          ByteMatrix matrix = new ByteMatrix(dimension, dimension);
-         int maskPattern = chooseMaskPattern(finalBits, ecLevel, version, matrix);
+         int maskPattern = 3;
+         if (doSelectMask)
+            maskPattern = chooseMaskPattern(finalBits, ecLevel, version, matrix);
          qrCode.MaskPattern = maskPattern;
 
          // Build the matrix and set it to "qrCode".

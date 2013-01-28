@@ -60,5 +60,12 @@ namespace ZXing
       /// {@link com.google.zxing.pdf417.encoder.Dimensions Dimensions}).
       /// </summary>
       PDF417_DIMENSIONS,
+
+      /// <summary>
+      /// specifies if the slow algorithm of selecting an appropriate mask should be execute.
+      /// if true it slow significantly down the process.
+      /// default: false
+      /// </summary>
+      QR_DO_MASK_SELECTION
    }
 }
