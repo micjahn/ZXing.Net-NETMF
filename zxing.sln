@@ -21,6 +21,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "zxing.micro.pdf417", "Sourc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroFrameworkDemo", "Clients\MicroFrameworkDemo\MicroFrameworkDemo.csproj", "{8891EB77-7229-4FD2-8CAF-3A08B65F5985}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "zxing.micro.qrcode.encoding", "Source\lib\zxing.micro.qrcode.encoding.csproj", "{D6A4D6CC-2D37-4D74-BCB7-7B554A9F42B4}"
+EndProject
 Global
 	GlobalSection(SubversionScc) = preSolution
 		Svn-Managed = True
@@ -115,6 +117,16 @@ Global
 		{8891EB77-7229-4FD2-8CAF-3A08B65F5985}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{8891EB77-7229-4FD2-8CAF-3A08B65F5985}.Release|Mixed Platforms.Deploy.0 = Release|Any CPU
 		{8891EB77-7229-4FD2-8CAF-3A08B65F5985}.Release|x86.ActiveCfg = Release|Any CPU
+		{D6A4D6CC-2D37-4D74-BCB7-7B554A9F42B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6A4D6CC-2D37-4D74-BCB7-7B554A9F42B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6A4D6CC-2D37-4D74-BCB7-7B554A9F42B4}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{D6A4D6CC-2D37-4D74-BCB7-7B554A9F42B4}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{D6A4D6CC-2D37-4D74-BCB7-7B554A9F42B4}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D6A4D6CC-2D37-4D74-BCB7-7B554A9F42B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6A4D6CC-2D37-4D74-BCB7-7B554A9F42B4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D6A4D6CC-2D37-4D74-BCB7-7B554A9F42B4}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{D6A4D6CC-2D37-4D74-BCB7-7B554A9F42B4}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{D6A4D6CC-2D37-4D74-BCB7-7B554A9F42B4}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
